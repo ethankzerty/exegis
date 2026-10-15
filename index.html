@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta
+        name="description"
+        content="EXEGIS — Analysis, Videos, Essays, Art and ideas."
+    >
+
+    <title>EXEGIS — A Journal of Ideas</title>
+
+    <!-- STYLESHEET -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- JAVASCRIPT -->
+    <script defer src="js/common.js"></script>
+    <script defer src="js/content.js"></script>
+    <script defer src="js/site.js"></script>
+</head>
+
+<body id="top">
+
+    <div class="site">
+
+        <!-- ===================================== -->
+        <!-- HEADER                               -->
+        <!-- ===================================== -->
+
+        <header class="journal-header">
+
+            <!-- TOP LINE -->
+
+            <div class="utility">
+
+                <span>RHETORIC</span>
+
+                <span>ESSAYS, IDEAS, CULTURE</span>
+
+            </div>
+
+
+            <!-- JOURNAL TITLE -->
+
+            <div class="masthead">
+
+                <a href="index.html" class="wordmark">
+                    EXEGIS<span class="masthead-dot">.</span>
+                </a>
+
+                <div class="masthead-sub">
+                    A journal of thoughts, observations
+                    &amp; rhetoric study on the world
+                </div>
+
+            </div>
+
+
+            <!-- ===================================== -->
+            <!-- COMPACT DROPDOWN NAVIGATION           -->
+            <!-- ===================================== -->
+
+            <div class="journal-menu-bar">
+
+                <details class="journal-main-menu">
+
+                    <summary class="journal-menu-button">
+                        <span>MENU</span>
+                        <span aria-hidden="true">☰</span>
+                    </summary>
+
+                    <nav
+                        id="main-nav"
+                        class="journal-menu-panel"
+                        aria-label="Main navigation"
+                    >
+
+                        <div class="menu-panel-heading">
+                            EXPLORE EXEGIS
+                        </div>
+
+                        <a href="index.html" data-nav="home">
+                            Front page
+                        </a>
+
+                        <a href="section.html?section=articles"
+                           data-nav="articles">
+                            Articles
+                        </a>
+
+                        <a href="section.html?section=analysis"
+                           data-nav="analysis">
+                            Analysis
+                        </a>
+
+                        <a href="section.html?section=opinion"
+                           data-nav="opinion">
+                            Opinion
+                        </a>
+
+                        <a href="section.html?section=videos"
+                           data-nav="videos">
+                            Videos
+                        </a>
+
+                        <a href="section.html?section=art"
+                           data-nav="art">
+                            Art
+                        </a>
+
+                        <a href="section.html?section=to-read"
+                           data-nav="to-read">
+                            Gift of the day
+                        </a>
+
+                        <div class="menu-panel-divider"></div>
+
+                        <a href="section.html?section=archives"
+                           data-nav="archives">
+                            Archives
+                        </a>
+
+                        <a href="about.html" data-nav="about">
+                            About
+                        </a>
+
+                    </nav>
+
+                </details>
+
+            </div>
+
+        </header>
+
+
+        <!-- ===================================== -->
+        <!-- MAIN HOMEPAGE                        -->
+        <!-- ===================================== -->
+
+        <main class="front-page">
+
+
+            <!-- ===================================== -->
+            <!-- MOST RECENT PUBLICATION              -->
+            <!-- ===================================== -->
+
+            <section class="latest-feature">
+
+                <div class="section-bar">
+
+                    <h2>MOST RECENTLY</h2>
+
+                </div>
+
+                <!--
+                    Automatically displays your
+                    latest publication using site.js
+                -->
+
+                <div id="lead-story"></div>
+
+            </section>
+
+
+            <!-- ===================================== -->
+            <!-- JOURNAL PUBLICATIONS GRID            -->
+            <!-- ===================================== -->
+
+            <section class="latest-section">
+
+                <div class="section-bar">
+
+                    <h2>FROM THE JOURNAL</h2>
+
+                    <a href="section.html?section=archives">
+                        The complete archive ↗
+                    </a>
+
+                </div>
+
+                <!--
+                    Compact article vignettes generated
+                    automatically from js/content.js
+                -->
+
+                <div
+                    id="entries"
+                    class="story-grid"
+                ></div>
+
+
+                <!-- Shown when no entries exist -->
+
+                <p id="empty" class="empty" hidden>
+                    No publications yet.
+                </p>
+
+            </section>
+
+
+            <!-- Used by existing site.js -->
+
+            <span id="visible-count" hidden></span>
+
+        </main>
+
+
+        <!-- ===================================== -->
+        <!-- FOOTER                               -->
+        <!-- ===================================== -->
+
+        <footer class="site-footer">
+
+            <span>
+                © <span data-year></span> EXEGIS
+            </span>
+
+            <span>
+                Ethan Nojadahe
+            </span>
+
+            <a href="#top">
+                Back to top ↑
+            </a>
+
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
