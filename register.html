@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Register — EXEGIS</title>
+
+    <meta name="description"
+          content="Create an account to join EXEGIS Discussions.">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Supabase browser library -->
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
+
+    <!-- Configuration and authentication -->
+    <script defer src="js/supabase-config.js"></script>
+    <script defer src="js/auth.js"></script>
+
+</head>
+
+<body>
+
+    <div class="site">
+
+        <!-- HEADER -->
+
+        <header class="journal-header">
+
+            <div class="utility">
+                <span>RHETORIC</span>
+                <span>ESSAYS, IDEAS, CULTURE</span>
+            </div>
+
+            <div class="masthead">
+
+                <a href="index.html" class="wordmark">
+                    EXEGIS<span class="masthead-dot">.</span>
+                </a>
+
+                <div class="masthead-sub">
+                    A journal of thoughts, observations
+                    &amp; rhetoric study on the world
+                </div>
+
+            </div>
+
+            <div class="auth-nav">
+                <a href="index.html">← Front page</a>
+                <a href="login.html">Sign in</a>
+            </div>
+
+        </header>
+
+
+        <!-- REGISTRATION FORM -->
+
+        <main class="auth-main">
+
+            <section class="auth-panel">
+
+                <p class="eyebrow">EXEGIS DISCUSSIONS</p>
+
+                <h1>Create an account</h1>
+
+                <p class="auth-description">
+                    Join the conversation. Share your thoughts,
+                    question ideas, and exchange perspectives.
+                </p>
+
+                <form id="register-form">
+
+                    <label for="display-name">
+                        Display name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="display-name"
+                        name="display-name"
+                        placeholder="Your public name"
+                        minlength="2"
+                        maxlength="60"
+                        required
+                    >
+
+                    <p class="field-note">
+                        This name will appear publicly beside
+                        your discussions and replies.
+                    </p>
+
+
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <p class="field-note">
+                        Use a unique password with at least
+                        8 characters.
+                    </p>
+
+
+                    <label class="auth-consent">
+                        <input
+                            type="checkbox"
+                            id="rules-agreement"
+                            required
+                        >
+
+                        <span>
+                            I agree to participate respectfully.
+                            My chosen display name and messages
+                            will be publicly visible.
+                        </span>
+                    </label>
+
+
+                    <button type="submit"
+                            class="auth-submit">
+                        Create account
+                    </button>
+
+                </form>
+
+                <p id="auth-message"
+                   class="auth-message"
+                   role="status"
+                   aria-live="polite">
+                </p>
+
+                <div class="auth-bottom">
+                    Already registered?
+                    <a href="login.html">Sign in →</a>
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- FOOTER -->
+
+        <footer class="site-footer">
+
+            <span>© EXEGIS</span>
+
+            <span>
+                Discussions · Ideas · Culture
+            </span>
+
+            <a href="index.html">
+                Return home ↑
+            </a>
+
+        </footer>
+
+    </div>
+
+</body>
+</html>
