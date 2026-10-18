@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Sign In — EXEGIS</title>
+
+    <meta name="description"
+          content="Sign in to EXEGIS Discussions.">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
+
+    <script defer src="js/supabase-config.js"></script>
+    <script defer src="js/auth.js"></script>
+
+</head>
+
+<body>
+
+    <div class="site">
+
+        <!-- HEADER -->
+
+        <header class="journal-header">
+
+            <div class="utility">
+                <span>RHETORIC</span>
+                <span>ESSAYS, IDEAS, CULTURE</span>
+            </div>
+
+            <div class="masthead">
+
+                <a href="index.html" class="wordmark">
+                    EXEGIS<span class="masthead-dot">.</span>
+                </a>
+
+                <div class="masthead-sub">
+                    A journal of thoughts, observations
+                    &amp; rhetoric study on the world
+                </div>
+
+            </div>
+
+            <div class="auth-nav">
+                <a href="index.html">← Front page</a>
+                <a href="register.html">Register</a>
+            </div>
+
+        </header>
+
+
+        <!-- LOGIN -->
+
+        <main class="auth-main">
+
+            <section class="auth-panel">
+
+                <p class="eyebrow">EXEGIS DISCUSSIONS</p>
+
+                <h1>Welcome back</h1>
+
+                <p class="auth-description">
+                    Sign in to participate in discussions
+                    and conversations.
+                </p>
+
+
+                <!-- SIGN-IN FORM -->
+
+                <form id="login-form">
+
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+
+                    <button type="submit"
+                            class="auth-submit">
+                        Sign in
+                    </button>
+
+                </form>
+
+
+                <!-- SIGNED-IN ACCOUNT PANEL -->
+
+                <div id="account-panel" hidden>
+
+                    <h2>You're signed in.</h2>
+
+                    <p id="account-name"></p>
+
+                    <p>
+                        Your account is ready.
+                        Discussions will be available
+                        once the forum pages are connected.
+                    </p>
+
+                    <button id="logout-button"
+                            type="button"
+                            class="auth-submit">
+                        Sign out
+                    </button>
+
+                </div>
+
+
+                <p id="auth-message"
+                   class="auth-message"
+                   role="status"
+                   aria-live="polite">
+                </p>
+
+                <div class="auth-bottom">
+                    New to EXEGIS?
+                    <a href="register.html">
+                        Create an account →
+                    </a>
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- FOOTER -->
+
+        <footer class="site-footer">
+
+            <span>© EXEGIS</span>
+
+            <span>
+                Discussions · Ideas · Culture
+            </span>
+
+            <a href="index.html">
+                Return home ↑
+            </a>
+
+        </footer>
+
+    </div>
+
+</body>
+</html>
