@@ -46,3 +46,192 @@
     }
 
 }
+
+/* =========================================
+   EXEGIS — AUTHENTICATION PAGES
+   ========================================= */
+
+.auth-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
+
+.auth-nav a {
+    color: inherit;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.auth-nav a:hover {
+    text-decoration: underline;
+}
+
+
+/* MAIN CONTAINER */
+
+.auth-main {
+    display: flex;
+    justify-content: center;
+    padding: 65px 20px 90px;
+}
+
+.auth-panel {
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-panel h1 {
+    font-family: Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    margin: 15px 0;
+}
+
+.auth-description {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+
+/* FORM */
+
+.auth-panel form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-panel form > label:not(.auth-consent) {
+    margin: 18px 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.auth-panel input:not([type="checkbox"]) {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #bdbab4;
+    border-radius: 0;
+    background: #fff;
+    color: #222;
+    font-size: 15px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.auth-panel input:focus {
+    outline: 1px solid #333;
+}
+
+.field-note {
+    color: #777;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 7px 0 5px;
+}
+
+
+/* AGREEMENT */
+
+.auth-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 24px 0 12px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.auth-consent input {
+    margin-top: 4px;
+}
+
+
+/* BUTTON */
+
+.auth-submit {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    background: #252525;
+    color: white;
+    border: 1px solid #252525;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+}
+
+.auth-submit:hover {
+    background: #48413c;
+}
+
+.auth-submit:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
+
+/* MESSAGES */
+
+.auth-message {
+    margin-top: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #326345;
+}
+
+.auth-message.error {
+    color: #a32f2f;
+}
+
+.auth-bottom {
+    margin-top: 30px;
+    padding-top: 18px;
+    border-top: 1px solid #ddd;
+    font-size: 13px;
+}
+
+.auth-bottom a {
+    color: inherit;
+    margin-left: 5px;
+}
+
+
+/* ACCOUNT PANEL */
+
+#account-panel {
+    padding: 20px 0;
+}
+
+#account-panel h2 {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+/* Respect hidden elements even if earlier CSS
+   gives them display: flex or block */
+
+.auth-panel [hidden] {
+    display: none !important;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .auth-main {
+        padding: 40px 10px 60px;
+    }
+
+    .auth-panel h1 {
+        font-size: 30px;
+    }
+
+}
