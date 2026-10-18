@@ -32,59 +32,181 @@ document.addEventListener("DOMContentLoaded", () => {
         currentPage = section;
     }
 
+    else if (filename === "discussions.html") {
+        currentPage = "discussions";
+    }
 
-    // =====================================
-    // 2. HIGHLIGHT ACTIVE MENU LINK
-    // =====================================
+    else if (filename === "register.html") {
+        currentPage = "register";
+    }
 
-    const activeLink = document.querySelector(
-        `[data-nav="${currentPage}"]`
-    );
+    else if (filename === "login.html") {
+        currentPage = "login";
+    }
 
-    if (activeLink) {
-        activeLink.classList.add("selected");
-        activeLink.setAttribute("aria-current", "page");
+    else if (filename === "password.html") {
+        currentPage = "login";
     }
 
 
     // =====================================
-    // 3. CLOSE MENU WHEN CLICKING OUTSIDE
+    // 2. SHARED NAVIGATION MENU
     // =====================================
 
-    const menu = document.querySelector(
+    const sharedMenu = `
+        <div class="menu-panel-heading">
+            EXPLORE EXEGIS
+        </div>
+
+        <a href="index.html" data-nav="home">
+            Front page
+        </a>
+
+        <a href="section.html?section=articles"
+           data-nav="articles">
+            Articles
+        </a>
+
+        <a href="section.html?section=analysis"
+           data-nav="analysis">
+            Analysis
+        </a>
+
+        <a href="section.html?section=opinion"
+           data-nav="opinion">
+            Opinion
+        </a>
+
+        <a href="section.html?section=videos"
+           data-nav="videos">
+            Videos
+        </a>
+
+        <a href="section.html?section=art"
+           data-nav="art">
+            Art
+        </a>
+
+        <a href="section.html?section=to-read"
+           data-nav="to-read">
+            Gift of the day
+        </a>
+
+        <div class="menu-panel-divider"></div>
+
+        <a href="discussions.html"
+           data-nav="discussions">
+            Discussions
+        </a>
+
+        <div class="menu-panel-divider"></div>
+
+        <a href="section.html?section=archives"
+           data-nav="archives">
+            All publications
+        </a>
+
+        <a href="about.html" data-nav="about">
+            About
+        </a>
+
+        <div class="menu-panel-divider"></div>
+
+        <div class="menu-panel-heading">
+            MEMBERS
+        </div>
+
+        <a href="register.html"
+           data-nav="register">
+            Create an account
+        </a>
+
+        <a href="login.html"
+           data-nav="login">
+            Sign in
+        </a>
+    `;
+
+
+    // =====================================
+    // 3. INSTALL MENU ON EVERY PAGE
+    // =====================================
+
+    document.querySelectorAll(
+        ".journal-menu-panel"
+    ).forEach((menuPanel) => {
+
+        menuPanel.innerHTML = sharedMenu;
+
+    });
+
+
+    // =====================================
+    // 4. HIGHLIGHT CURRENT PAGE
+    // =====================================
+
+    document.querySelectorAll(
+        ".journal-menu-panel [data-nav]"
+    ).forEach((link) => {
+
+        if (link.dataset.nav === currentPage) {
+
+            link.classList.add("selected");
+
+            link.setAttribute(
+                "aria-current",
+                "page"
+            );
+
+        }
+
+    });
+
+
+    // =====================================
+    // 5. CLOSE MENU WHEN CLICKING OUTSIDE
+    // =====================================
+
+    document.querySelectorAll(
         ".journal-main-menu"
-    );
+    ).forEach((menu) => {
 
-    document.addEventListener("click", (event) => {
+        document.addEventListener(
+            "click",
+            (event) => {
 
-        if (menu && !menu.contains(event.target)) {
-            menu.open = false;
-        }
+                if (!menu.contains(event.target)) {
+                    menu.open = false;
+                }
+
+            }
+        );
+
+        document.addEventListener(
+            "keydown",
+            (event) => {
+
+                if (event.key === "Escape") {
+                    menu.open = false;
+                }
+
+            }
+        );
 
     });
 
 
     // =====================================
-    // 4. CLOSE MENU WITH ESCAPE KEY
+    // 6. AUTOMATIC COPYRIGHT YEAR
     // =====================================
 
-    document.addEventListener("keydown", (event) => {
+    document.querySelectorAll(
+        "[data-year]"
+    ).forEach((element) => {
 
-        if (event.key === "Escape" && menu) {
-            menu.open = false;
-        }
+        element.textContent =
+            new Date().getFullYear();
 
     });
-
-
-    // =====================================
-    // 5. AUTOMATIC COPYRIGHT YEAR
-    // =====================================
-
-    document.querySelectorAll("[data-year]").forEach(
-        (element) => {
-            element.textContent = new Date().getFullYear();
-        }
-    );
 
 });
