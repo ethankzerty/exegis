@@ -1,4 +1,53 @@
-EXEGIS — AUTHENTICATION PAGES
+/* =========================================
+   EXEGIS — PAGE CONSISTENCY
+   ========================================= */
+
+/* Keep the header above article content */
+
+.journal-header {
+    position: relative;
+    z-index: 10;
+}
+
+/* Keep the navigation above other elements */
+
+.journal-menu-bar {
+    z-index: 20;
+}
+
+/* Open the menu on the left */
+
+.journal-main-menu .journal-menu-panel {
+    left: 0;
+    right: auto;
+    max-width: calc(100vw - 34px);
+}
+
+/* Highlight the current section */
+
+.journal-main-menu .journal-menu-panel a.selected {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* Most recent publication */
+
+.latest-feature {
+    border-top: none;
+}
+
+/* Mobile adjustments */
+
+@media (max-width: 520px) {
+
+    .journal-menu-bar {
+        padding: 8px 0;
+    }
+
+}
+
+/* =========================================
+   EXEGIS — AUTHENTICATION PAGES
    ========================================= */
 
 .auth-nav {
