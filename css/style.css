@@ -198,3 +198,42 @@
 .journal-main-menu .journal-menu-panel a.selected { color: var(--accent); font-weight: 700; }
 .latest-feature { border-top: none; }
 @media (max-width: 520px) { .journal-menu-bar { padding: 8px 0; } }
+
+/* =========================================
+   EXEGIS — MENU IN TOP-LEFT CORNER
+   ========================================= */
+
+.utility {
+    overflow: visible;
+    position: relative;
+    z-index: 100;
+}
+
+.utility .journal-main-menu {
+    position: relative;
+    display: block;
+    z-index: 101;
+}
+
+.utility .journal-menu-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    list-style: none;
+}
+
+.utility .journal-menu-button::-webkit-details-marker {
+    display: none;
+}
+
+.utility .journal-main-menu .journal-menu-panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    right: auto;
+    z-index: 200;
+}
