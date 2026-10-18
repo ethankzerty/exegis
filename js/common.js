@@ -197,6 +197,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // =====================================
+    // MOVE MENU TO TOP-LEFT OF HEADER
+    // =====================================
+
+    const utility = document.querySelector(".utility");
+    const menuDetails = document.querySelector(
+        ".journal-main-menu"
+    );
+    const oldMenuBar = document.querySelector(
+        ".journal-menu-bar"
+    );
+
+    if (utility && menuDetails && oldMenuBar) {
+
+        const rhetoricLabel =
+            utility.querySelector("span");
+
+        // Put the existing menu where RHETORIC was
+        if (rhetoricLabel) {
+            rhetoricLabel.replaceWith(menuDetails);
+        } else {
+            utility.prepend(menuDetails);
+        }
+
+        // Remove the now-empty navigation bar
+        oldMenuBar.remove();
+    }
+
+    // =====================================
     // 6. AUTOMATIC COPYRIGHT YEAR
     // =====================================
 
