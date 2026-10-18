@@ -20,7 +20,7 @@
 // =====================================
 
 const SUPABASE_URL =
-    "https://zowpbaqkaagrupxawqck.supabase.co";
+    "https://zowpbaqkaagpupxawgck.supabase.co";
 
 
 // =====================================
