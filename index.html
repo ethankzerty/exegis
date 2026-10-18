@@ -13,14 +13,23 @@
 
     <title>EXEGIS — A Journal of Ideas</title>
 
-    <!-- STYLESHEET -->
+    <!-- ===================================== -->
+    <!-- STYLESHEET                            -->
+    <!-- ===================================== -->
+
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- JAVASCRIPT -->
+
+    <!-- ===================================== -->
+    <!-- JAVASCRIPT                            -->
+    <!-- ===================================== -->
+
     <script defer src="js/common.js"></script>
     <script defer src="js/content.js"></script>
     <script defer src="js/site.js"></script>
+
 </head>
+
 
 <body id="top">
 
@@ -43,7 +52,9 @@
             </div>
 
 
-            <!-- JOURNAL TITLE -->
+            <!-- ===================================== -->
+            <!-- JOURNAL TITLE                        -->
+            <!-- ===================================== -->
 
             <div class="masthead">
 
@@ -52,8 +63,10 @@
                 </a>
 
                 <div class="masthead-sub">
+
                     A journal of thoughts, observations
                     &amp; rhetoric study on the world
+
                 </div>
 
             </div>
@@ -67,10 +80,20 @@
 
                 <details class="journal-main-menu">
 
+                    <!-- MENU BUTTON -->
+
                     <summary class="journal-menu-button">
+
                         <span>MENU</span>
+
                         <span aria-hidden="true">☰</span>
+
                     </summary>
+
+
+                    <!-- ===================================== -->
+                    <!-- MAIN NAVIGATION LINKS                -->
+                    <!-- ===================================== -->
 
                     <nav
                         id="main-nav"
@@ -82,49 +105,137 @@
                             EXPLORE EXEGIS
                         </div>
 
+
+                        <!-- HOMEPAGE -->
+
                         <a href="index.html" data-nav="home">
                             Front page
                         </a>
 
-                        <a href="section.html?section=articles"
-                           data-nav="articles">
+
+                        <!-- ARTICLES -->
+
+                        <a
+                            href="section.html?section=articles"
+                            data-nav="articles"
+                        >
                             Articles
                         </a>
 
-                        <a href="section.html?section=analysis"
-                           data-nav="analysis">
+
+                        <!-- ANALYSIS -->
+
+                        <a
+                            href="section.html?section=analysis"
+                            data-nav="analysis"
+                        >
                             Analysis
                         </a>
 
-                        <a href="section.html?section=opinion"
-                           data-nav="opinion">
+
+                        <!-- OPINION -->
+
+                        <a
+                            href="section.html?section=opinion"
+                            data-nav="opinion"
+                        >
                             Opinion
                         </a>
 
-                        <a href="section.html?section=videos"
-                           data-nav="videos">
+
+                        <!-- VIDEOS -->
+
+                        <a
+                            href="section.html?section=videos"
+                            data-nav="videos"
+                        >
                             Videos
                         </a>
 
-                        <a href="section.html?section=art"
-                           data-nav="art">
+
+                        <!-- ART -->
+
+                        <a
+                            href="section.html?section=art"
+                            data-nav="art"
+                        >
                             Art
                         </a>
 
-                        <a href="section.html?section=to-read"
-                           data-nav="to-read">
+
+                        <!-- GIFT OF THE DAY -->
+
+                        <a
+                            href="section.html?section=to-read"
+                            data-nav="to-read"
+                        >
                             Gift of the day
                         </a>
 
+
+                        <!-- ===================================== -->
+                        <!-- DISCUSSIONS                         -->
+                        <!-- ===================================== -->
+
                         <div class="menu-panel-divider"></div>
 
-                        <a href="section.html?section=archives"
-                           data-nav="archives">
-                            Archives
+                        <a
+                            href="discussions.html"
+                            data-nav="discussions"
+                        >
+                            Discussions
                         </a>
 
-                        <a href="about.html" data-nav="about">
+
+                        <!-- ===================================== -->
+                        <!-- ARCHIVES AND ABOUT                  -->
+                        <!-- ===================================== -->
+
+                        <div class="menu-panel-divider"></div>
+
+                        <a
+                            href="section.html?section=archives"
+                            data-nav="archives"
+                        >
+                            All publications
+                        </a>
+
+                        <a
+                            href="about.html"
+                            data-nav="about"
+                        >
                             About
+                        </a>
+
+
+                        <!-- ===================================== -->
+                        <!-- MEMBER ACCOUNTS                      -->
+                        <!-- ===================================== -->
+
+                        <div class="menu-panel-divider"></div>
+
+                        <div class="menu-panel-heading">
+                            MEMBERS
+                        </div>
+
+
+                        <!-- REGISTRATION -->
+
+                        <a
+                            href="register.html"
+                            data-nav="register"
+                        >
+                            Create an account
+                        </a>
+
+
+                        <!-- LOGIN -->
+
+                        <a
+                            href="login.html"
+                            data-nav="login"
+                        >
+                            Sign in
                         </a>
 
                     </nav>
@@ -151,13 +262,17 @@
 
                 <div class="section-bar">
 
-                    <h2>MOST RECENTLY</h2>
+                    <h2>
+                        MOST RECENTLY
+                    </h2>
 
                 </div>
 
+
                 <!--
-                    Automatically displays your
-                    latest publication using site.js
+                    The latest publication is
+                    automatically displayed here
+                    by js/site.js.
                 -->
 
                 <div id="lead-story"></div>
@@ -173,17 +288,21 @@
 
                 <div class="section-bar">
 
-                    <h2>FROM THE JOURNAL</h2>
+                    <h2>
+                        FROM THE JOURNAL
+                    </h2>
 
                     <a href="section.html?section=archives">
-                        The complete archive ↗
+                        All publications ↗
                     </a>
 
                 </div>
 
+
                 <!--
-                    Compact article vignettes generated
+                    Publication vignettes are generated
                     automatically from js/content.js
+                    using js/site.js.
                 -->
 
                 <div
@@ -192,16 +311,22 @@
                 ></div>
 
 
-                <!-- Shown when no entries exist -->
+                <!-- EMPTY PUBLICATIONS MESSAGE -->
 
-                <p id="empty" class="empty" hidden>
+                <p
+                    id="empty"
+                    class="empty"
+                    hidden
+                >
                     No publications yet.
                 </p>
 
             </section>
 
 
-            <!-- Used by existing site.js -->
+            <!-- ===================================== -->
+            <!-- PUBLICATION COUNT                    -->
+            <!-- ===================================== -->
 
             <span id="visible-count" hidden></span>
 
