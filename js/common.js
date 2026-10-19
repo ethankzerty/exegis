@@ -125,6 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
            data-nav="login">
             Sign in
         </a>
+        <a href="admin/"
+   id="admin-menu-link"
+   hidden>
+    Administration →
+</a>
     `;
 
 
@@ -268,5 +273,49 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     });
+
+    // =====================================
+    // 8. ADMINISTRATION MENU LINK
+    // =====================================
+
+    async function showAdminLink() {
+
+        const link = document.getElementById("admin-menu-link");
+        if (!link) return;
+
+        link.hidden = true;
+
+        if (
+            !window.supabase ||
+            typeof SUPABASE_URL === "undefined" ||
+            typeof SUPABASE_PUBLISHABLE_KEY === "undefined"
+        ) {
+            return;
+        }
+
+        try {
+            const client = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+            const { data: { user } } =
+                await client.auth.getUser();
+
+            if (!user) return;
+
+            const { data, error } =
+                await client.rpc("is_exegis_admin");
+
+            if (!error && data === true) {
+                link.hidden = false;
+            }
+
+        } catch (error) {
+            console.warn("Admin navigation check failed.");
+        }
+    }
+
+    showAdminLink();
 
 });
