@@ -2,18 +2,13 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- SUPABASE AUTHENTICATION LIBRARY -->
-<script defer
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-</script>
-
-<!-- EXISTING SUPABASE PROJECT CONFIGURATION -->
-<script defer src="../js/supabase-config.js"></script>
-
-<!-- PRIVATE ADMINISTRATOR LOGIN -->
-<script defer src="auth.js?v=1"></script>
-
 <head>
+<!-- SUPABASE AUTHENTICATION LIBRARY -->
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script defer src="../js/supabase-config.js"></script>
+<script defer src="auth.js?v=3"></script>
+
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -429,6 +424,7 @@ body.admin-authorized .editor-layout {
         <div class="editor-top-right">
             <span class="prototype-tag">Editor prototype</span>
             <a href="../index.html">View journal ↗</a>
+            <button type="button" id="admin-logout" class="action" hidden>Sign out</button>
         </div>
     </header>
 
