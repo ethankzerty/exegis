@@ -470,6 +470,31 @@
 
             const [heading, description] =
                 sections[current];
+            
+    // Display the category's large banner image.
+
+    const category = journalCategories.find(
+        item => item.key === current
+    );
+
+    const banner = document.getElementById(
+        "category-banner"
+    );
+
+    const bannerImage = document.getElementById(
+        "category-banner-image"
+    );
+
+    if (banner && bannerImage && category?.image) {
+        const imageURL = safeImageURL(category.image);
+
+        if (imageURL) {
+            bannerImage.src = imageURL;
+            bannerImage.alt = `${heading} — EXEGIS`;
+            banner.hidden = false;
+        }
+    }
+
 
             document.title =
                 `${heading} — EXEGIS`;
