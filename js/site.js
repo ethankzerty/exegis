@@ -77,7 +77,7 @@
     { key: "opinion", image: "images/opinion.jpg" },
         { key: "videos", image: "" },
         { key: "art", image: "images/art.png" },
-    { key: "to-read", image: "images/gift-of-the-day.png" }
+    { key: "to-read", image: "images/gift of the day.png" }
     ];
 
     // Only editorial publications appear
