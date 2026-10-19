@@ -237,4 +237,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+    // =====================================
+    // 7. SHARED FOOTER CONTACT EMAIL
+    // =====================================
+
+    document.querySelectorAll("footer").forEach((footer) => {
+
+        const elements = footer.querySelectorAll(
+            "p, span, div"
+        );
+
+        elements.forEach((element) => {
+
+            // Locate the existing footer tagline.
+            if (
+                element.children.length === 0 &&
+                element.textContent
+                    .toLowerCase()
+                    .includes("a personal journal of ideas")
+            ) {
+                const link = document.createElement("a");
+
+                link.href = "mailto:contact@exegis-journal.com";
+                link.textContent = "contact@exegis-journal.com";
+
+                // Preserve the existing footer element and its styling.
+                element.replaceChildren(link);
+            }
+
+        });
+
+    });
+
 });
