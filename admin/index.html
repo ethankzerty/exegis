@@ -392,6 +392,17 @@ button {
 
 /* The [hidden] attribute controls all private content visibility. */
 
+/* Saved draft list */
+.draft-library { margin-top: 28px; background: var(--white); border: 1px solid var(--line); padding: 27px; }
+.draft-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.draft-toolbar h2 { font: normal 25px Georgia, serif; margin: 0; }
+.draft-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+.draft-item strong { display: block; font: normal 18px Georgia, serif; overflow-wrap: anywhere; }
+.draft-item small { color: var(--muted); }
+.draft-item button { flex-shrink: 0; }
+#draft-message { min-height: 20px; }
+#draft-message.error { color: #a43535; }
+#draft-message.success { color: #326345; }
 </style>
 </head>
 
@@ -645,7 +656,7 @@ button {
 
             <div class="editor-actions">
 
-                <button class="action" type="button" disabled>
+                <button class="action" id="save-draft" type="button" disabled>
                     Save draft
                 </button>
 
@@ -658,9 +669,9 @@ button {
             </div>
 
             <p class="action-note">
-                Publishing is disabled in this prototype.
-                No content is saved or sent to a server.
+                Drafts are private and saved in Supabase. Publishing is not enabled yet.
             </p>
+            <p id="draft-message" role="status" aria-live="polite"></p>
 
         </main>
 
@@ -711,6 +722,15 @@ button {
 
     </div>
 
+    <section id="draft-library" class="draft-library" hidden>
+        <div class="draft-toolbar">
+            <h2>Your saved drafts</h2>
+            <button type="button" id="new-draft" class="action">+ New draft</button>
+        </div>
+        <p id="draft-list-status" class="field-note"></p>
+        <div id="draft-list"></div>
+    </section>
+
 </div>
 
 <script>
@@ -732,6 +752,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const date = $("publication-date");
 
     let giftKind = "song";
+    window.EXEGIS_EDITOR = {
+        getGiftKind: () => giftKind,
+        setGiftKind: kind => {
+            giftKind = ["song", "painting", "movie"].includes(kind) ? kind : "song";
+            document.querySelectorAll("[data-kind]").forEach(button => {
+                button.classList.toggle("active", button.dataset.kind === giftKind);
+            });
+            updateTemplate();
+        },
+        updateTemplate: () => updateTemplate(),
+        updatePreview: () => updatePreview()
+    };
 
     const labels = {
         article: "Article",
@@ -935,6 +967,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         intro.hidden = !allowed;
         editor.hidden = !allowed;
         logout.hidden = !allowed;
+        document.getElementById("draft-library").hidden = !allowed;
+        document.getElementById("save-draft").disabled = !allowed;
+        if (!allowed) window.EXEGIS_ADMIN_CLIENT = null;
     }
     showEditor(false);
 
@@ -959,6 +994,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function refresh() {
         const allowed = await isAuthorized();
         showEditor(allowed);
+        if (allowed) {
+            window.EXEGIS_ADMIN_CLIENT = client;
+            document.dispatchEvent(new Event("exegis-admin-ready"));
+        }
         return allowed;
     }
 
@@ -998,6 +1037,162 @@ document.addEventListener("DOMContentLoaded", async () => {
         showEditor(false);
         status.textContent = error.message || "Cannot verify administrator access.";
     }
+});
+</script>
+
+
+<script>
+/* EXEGIS — PRIVATE DRAFTS. No publishing operations. */
+document.addEventListener("DOMContentLoaded", () => {
+    const $ = id => document.getElementById(id);
+    const save = $("save-draft");
+    const list = $("draft-list");
+    const status = $("draft-message");
+    let currentId = null;
+    let currentSlug = null;
+    let saving = false;
+
+    function message(text, error = false) {
+        status.textContent = text;
+        status.className = error ? "error" : "success";
+    }
+
+    function slugify(value) {
+        const base = String(value || "untitled")
+            .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase().replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "").slice(0, 65);
+        return (base || "untitled") + "-" + crypto.randomUUID().slice(0, 8);
+    }
+
+    function collect(userId) {
+        const type = $("publication-type").value;
+        const title = $("publication-title").value.trim();
+        const body = $("publication-body").value;
+        const creator = $("creator").value.trim();
+        const summary = type === "to-read" ? creator : $("publication-summary").value.trim();
+        return {
+            author_id: userId,
+            slug: currentSlug || slugify(title),
+            title,
+            type,
+            summary,
+            body,
+            image: $("image-url").value.trim() || null,
+            video_url: $("video-url").value.trim() || null,
+            creator: creator || null,
+            gift_kind: type === "to-read" ? window.EXEGIS_EDITOR.getGiftKind() : null,
+            tags: type === "to-read" ? [] : $("publication-tags").value.split(",").map(x => x.trim()).filter(Boolean),
+            comments_enabled: $("comments-enabled").value === "true",
+            publication_date: $("publication-date").value || new Date().toISOString().slice(0,10),
+            status: "draft",
+            updated_at: new Date().toISOString()
+        };
+    }
+
+    async function getAuthorizedUser() {
+        const client = window.EXEGIS_ADMIN_CLIENT;
+        if (!client) throw new Error("Administrator session not available.");
+        const { data: { user }, error } = await client.auth.getUser();
+        if (error || !user) throw new Error("Please sign in again.");
+        const check = await client.rpc("is_exegis_admin");
+        if (check.error || check.data !== true) throw new Error("Administrator authorization failed.");
+        return { client, user };
+    }
+
+    save.addEventListener("click", async () => {
+        if (saving) return;
+        saving = true;
+        save.disabled = true;
+        message("Saving draft...");
+        try {
+            const { client, user } = await getAuthorizedUser();
+            const payload = collect(user.id);
+            if (!payload.title) throw new Error("Please enter a title before saving.");
+            const query = currentId
+                ? client.from("publications").update(payload).eq("id", currentId).eq("status", "draft")
+                : client.from("publications").insert(payload);
+            const { data, error } = await query.select("id, slug").single();
+            if (error) throw error;
+            currentId = data.id;
+            currentSlug = data.slug;
+            message("Draft saved privately in Supabase.");
+            await loadDrafts();
+        } catch (err) {
+            message(err.message || "Draft could not be saved.", true);
+        } finally {
+            saving = false;
+            if (window.EXEGIS_ADMIN_CLIENT) save.disabled = false;
+        }
+    });
+
+    function editDraft(draft) {
+        currentId = draft.id;
+        currentSlug = draft.slug;
+        $("publication-type").value = draft.type;
+        $("publication-title").value = draft.title || "";
+        $("publication-summary").value = draft.summary || "";
+        $("publication-body").value = draft.body || "";
+        $("creator").value = draft.creator || "";
+        $("image-url").value = draft.image || "";
+        $("video-url").value = draft.video_url || "";
+        $("publication-tags").value = (draft.tags || []).join(", ");
+        $("publication-date").value = draft.publication_date || "";
+        $("comments-enabled").value = String(draft.comments_enabled !== false);
+        window.EXEGIS_EDITOR.setGiftKind(draft.gift_kind || "song");
+        window.EXEGIS_EDITOR.updateTemplate();
+        message("Draft opened. Changes will be saved when you click Save draft.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function loadDrafts() {
+        const client = window.EXEGIS_ADMIN_CLIENT;
+        if (!client) return;
+        $("draft-list-status").textContent = "Loading drafts...";
+        const { data, error } = await client.from("publications")
+            .select("id,slug,title,type,summary,body,creator,image,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at")
+            .eq("status", "draft").order("updated_at", { ascending: false });
+        if (error) {
+            $("draft-list-status").textContent = "Unable to load drafts: " + error.message;
+            return;
+        }
+        list.replaceChildren();
+        $("draft-list-status").textContent = data.length ? `${data.length} private draft(s)` : "No saved drafts yet.";
+        data.forEach(draft => {
+            const item = document.createElement("div");
+            item.className = "draft-item";
+            const info = document.createElement("div");
+            const name = document.createElement("strong");
+            name.textContent = draft.title || "Untitled";
+            const meta = document.createElement("small");
+            meta.textContent = `${draft.type} · updated ${new Date(draft.updated_at).toLocaleString()}`;
+            const open = document.createElement("button");
+            open.type = "button";
+            open.className = "action";
+            open.textContent = "Edit";
+            open.addEventListener("click", () => editDraft(draft));
+            info.append(name, meta);
+            item.append(info, open);
+            list.append(item);
+        });
+    }
+
+    $("new-draft").addEventListener("click", () => {
+        currentId = null;
+        currentSlug = null;
+        ["publication-title", "publication-summary", "publication-body", "creator", "image-url", "video-url", "publication-tags"]
+            .forEach(id => { $(id).value = ""; });
+        $("publication-type").value = "article";
+        $("comments-enabled").value = "true";
+        const now = new Date();
+        $("publication-date").value = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+        window.EXEGIS_EDITOR.setGiftKind("song");
+        window.EXEGIS_EDITOR.updateTemplate();
+        message("New draft. Nothing is saved until you click Save draft.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.addEventListener("exegis-admin-ready", () => { void loadDrafts(); });
 });
 </script>
 
