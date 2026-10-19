@@ -1,6 +1,18 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
+<!-- SUPABASE AUTHENTICATION LIBRARY -->
+<script defer
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+</script>
+
+<!-- EXISTING SUPABASE PROJECT CONFIGURATION -->
+<script defer src="../js/supabase-config.js"></script>
+
+<!-- PRIVATE ADMINISTRATOR LOGIN -->
+<script defer src="auth.js?v=1"></script>
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -382,6 +394,24 @@ button {
         gap: 10px;
     }
 }
+
+/* Keep the editor hidden until administrator
+   authentication has completed. */
+
+.editor-intro,
+.editor-layout {
+    display: none;
+}
+
+body.admin-authorized .editor-intro,
+body.admin-authorized .editor-layout {
+    display: block;
+}
+
+body.admin-authorized .editor-layout {
+    display: grid;
+}
+
 </style>
 </head>
 
