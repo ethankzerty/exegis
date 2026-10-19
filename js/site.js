@@ -1,15 +1,17 @@
 
 /* =========================================
    EXEGIS — HOMEPAGE AND CATEGORY PAGES
-   Published Supabase entries + original archive
    ========================================= */
 
 (() => {
     "use strict";
 
-    // Publishable keys may be used in browser code.
-    // Never include service-role keys or GitHub
-    // publishing tokens here.
+    // =========================================
+    // SUPABASE CONFIGURATION
+    // =========================================
+
+    // Public publishable key only.
+    // Never include service-role or secret keys.
 
     const SUPABASE_PUBLIC_URL =
         "https://zowpbaqkaagpupxawgck.supabase.co";
@@ -17,8 +19,9 @@
     const SUPABASE_PUBLIC_KEY =
         "sb_publishable_2RGh4g-OssybEHTeci7cFg_mxzs85HE";
 
+
     // =========================================
-    // SECTIONS
+    // JOURNAL SECTIONS
     // =========================================
 
     const sections = {
@@ -61,27 +64,51 @@
         "to-read": "to-read"
     };
 
+
     // =========================================
-    // HOMEPAGE CATEGORY VIGNETTES
+    // CATEGORY IMAGES
     // =========================================
 
-    // These are permanent navigation cards.
-    // They are NOT individual publications.
+    // Used for both:
+    // 1. Homepage category vignettes
+    // 2. Large category-page banners
     //
-    // Add an image path when category images
-    // have been selected.
+    // Filenames must match GitHub exactly.
 
     const journalCategories = [
-        { key: "articles", image: "images/Articles.jpg" },
-        { key: "analysis", image: "images/Analysis.jpg" },
-        { key: "opinion", image: "images/opinion.jpg" },
-        { key: "videos", image: "images/video.png" },
-        { key: "art", image: "images/art.jpg" },
-        { key: "to-read", image: "images/gift of the day.png" }
+        {
+            key: "articles",
+            image: "images/Articles.jpg"
+        },
+        {
+            key: "analysis",
+            image: "images/Analysis.jpg"
+        },
+        {
+            key: "opinion",
+            image: "images/opinion.jpg"
+        },
+        {
+            key: "videos",
+            image: "images/video.png"
+        },
+        {
+            key: "art",
+            image: "images/art.jpg"
+        },
+        {
+            key: "to-read",
+            image: "images/gift of the day.png"
+        }
     ];
 
-    // Only editorial publications appear
-    // in the Most Recently section.
+
+    // =========================================
+    // HOMEPAGE FEATURED CONTENT
+    // =========================================
+
+    // Most Recently only includes these types.
+    // Art and Gift of the Day are excluded.
 
     const featuredTypes = new Set([
         "article",
@@ -90,8 +117,9 @@
         "video"
     ]);
 
+
     // =========================================
-    // PAGE PARAMETERS
+    // PAGE DETECTION
     // =========================================
 
     const params = new URLSearchParams(
@@ -114,8 +142,9 @@
             "section.html"
         );
 
+
     // =========================================
-    // HELPERS
+    // TEXT AND URL HELPERS
     // =========================================
 
     const esc = value =>
@@ -137,31 +166,34 @@
             return raw;
         }
 
-        const d = new Date(raw + "T12:00:00");
+        const parsed = new Date(raw + "T12:00:00");
 
-        return Number.isNaN(d.valueOf())
-            ? raw
-            : d.toLocaleDateString("en-US", {
+        if (Number.isNaN(parsed.valueOf())) {
+            return raw;
+        }
+
+        return parsed.toLocaleDateString(
+            "en-US",
+            {
                 month: "long",
                 day: "numeric",
                 year: "numeric"
-            });
+            }
+        );
     }
 
     function label(entry) {
-        if (entry.type === "to-read") {
-            return "Gift of the day";
-        }
+        const labels = {
+            article: "Article",
+            analysis: "Analysis",
+            opinion: "Opinion",
+            video: "Video",
+            art: "Art",
+            "to-read": "Gift of the day"
+        };
 
-        if (entry.type === "article") {
-            return "Article";
-        }
-
-        if (entry.type === "video") {
-            return "Video";
-        }
-
-        return String(entry.type || "");
+        return labels[entry.type] ||
+            String(entry.type || "");
     }
 
     const href = entry =>
@@ -177,23 +209,27 @@
                 window.location.href
             );
 
-            return (
-                url.protocol === "https:" ||
-                (
-                    url.protocol === "http:" &&
-                    url.origin === window.location.origin
-                )
-            )
-                ? url.href
-                : "";
+            if (url.protocol === "https:") {
+                return url.href;
+            }
+
+            if (
+                url.protocol === "http:" &&
+                url.origin === window.location.origin
+            ) {
+                return url.href;
+            }
+
+            return "";
 
         } catch {
             return "";
         }
     }
 
+
     // =========================================
-    // PUBLICATION ARTWORK
+    // PUBLICATION IMAGE
     // =========================================
 
     function art(entry) {
@@ -211,13 +247,16 @@
             `;
         }
 
-        const type =
-            Object.values(types).includes(entry.type)
-                ? entry.type
-                : "article";
+        const type = Object.values(types).includes(
+            entry.type
+        )
+            ? entry.type
+            : "article";
 
         return `
-            <div class="story-placeholder placeholder-${esc(type)}">
+            <div
+                class="story-placeholder placeholder-${esc(type)}"
+            >
                 <span>${esc(label(entry))}</span>
                 <b>${esc(
                     String(entry.title || "?").slice(0, 1)
@@ -226,18 +265,16 @@
         `;
     }
 
+
     // =========================================
-    // GENUINE PUBLICATION CARD
+    // PUBLICATION CARD
     // =========================================
 
     function card(entry) {
         return `
             <article class="story-card">
 
-                <a
-                    class="story-art"
-                    href="${href(entry)}"
-                >
+                <a class="story-art" href="${href(entry)}">
                     ${art(entry)}
                 </a>
 
@@ -268,8 +305,9 @@
         `;
     }
 
+
     // =========================================
-    // PERMANENT JOURNAL CATEGORY CARD
+    // HOMEPAGE CATEGORY VIGNETTE
     // =========================================
 
     function categoryCard(category) {
@@ -299,7 +337,9 @@
             `;
 
         return `
-            <article class="story-card journal-category-card">
+            <article
+                class="story-card journal-category-card"
+            >
 
                 <a
                     class="story-art"
@@ -326,12 +366,55 @@
         `;
     }
 
+
     // =========================================
-    // ORIGINAL MANUALLY AUTHORED PUBLICATIONS
+    // CATEGORY BANNER
     // =========================================
 
-    // Only genuine, non-draft entries
-    // should exist in js/content.js.
+    function renderCategoryBanner(sectionKey, heading) {
+        const banner = document.getElementById(
+            "category-banner"
+        );
+
+        const bannerImage = document.getElementById(
+            "category-banner-image"
+        );
+
+        if (!banner || !bannerImage) {
+            return;
+        }
+
+        const category = journalCategories.find(
+            item => item.key === sectionKey
+        );
+
+        const imageURL = category
+            ? safeImageURL(category.image)
+            : "";
+
+        // No banner for All Publications
+        // or categories without an image.
+
+        if (!imageURL) {
+            banner.hidden = true;
+            bannerImage.removeAttribute("src");
+            bannerImage.alt = "";
+            return;
+        }
+
+        bannerImage.src = imageURL;
+        bannerImage.alt = `${heading} — EXEGIS`;
+
+        banner.hidden = false;
+    }
+
+
+    // =========================================
+    // LOCAL ARCHIVE
+    // =========================================
+
+    // Only genuine non-draft publications.
+    // Supabase records take precedence.
 
     const originalEntries =
         Array.isArray(window.ARCHIVE_ENTRIES)
@@ -340,8 +423,9 @@
             )
             : [];
 
+
     // =========================================
-    // SUPABASE PUBLICATIONS
+    // SUPABASE DATA
     // =========================================
 
     function fromDatabase(row) {
@@ -373,7 +457,22 @@
 
         endpoint.searchParams.set(
             "select",
-            "slug,title,type,summary,body,image,image_alt,video_url,creator,gift_kind,tags,comments_enabled,publication_date,published_at"
+            [
+                "slug",
+                "title",
+                "type",
+                "summary",
+                "body",
+                "image",
+                "image_alt",
+                "video_url",
+                "creator",
+                "gift_kind",
+                "tags",
+                "comments_enabled",
+                "publication_date",
+                "published_at"
+            ].join(",")
         );
 
         endpoint.searchParams.set(
@@ -386,16 +485,13 @@
             "published_at.desc"
         );
 
-        endpoint.searchParams.set(
-            "limit",
-            "1000"
-        );
+        endpoint.searchParams.set("limit", "1000");
 
         const response = await fetch(
             endpoint.href,
             {
                 headers: {
-                    "apikey": SUPABASE_PUBLIC_KEY
+                    apikey: SUPABASE_PUBLIC_KEY
                 },
                 cache: "no-store"
             }
@@ -425,14 +521,14 @@
             .map(fromDatabase);
     }
 
+
     // =========================================
-    // PAGE RENDERING
+    // MAIN RENDER FUNCTION
     // =========================================
 
     function display(dbEntries) {
 
-        // Supabase entries take priority
-        // when a slug exists in both sources.
+        // Merge entries by unique slug.
 
         const merged = new Map();
 
@@ -443,8 +539,12 @@
         }
 
         for (const entry of dbEntries) {
-            merged.set(entry.slug, entry);
+            if (entry.slug) {
+                merged.set(entry.slug, entry);
+            }
         }
+
+        // Newest first.
 
         const all = [...merged.values()].sort(
             (a, b) =>
@@ -462,6 +562,7 @@
         const empty =
             document.getElementById("empty");
 
+
         // =====================================
         // CATEGORY / ARCHIVE PAGE
         // =====================================
@@ -470,40 +571,18 @@
 
             const [heading, description] =
                 sections[current];
-            
-    // Display the category's large banner image.
 
-    const category = journalCategories.find(
-        item => item.key === current
-    );
+            document.title = `${heading} — EXEGIS`;
 
-    const banner = document.getElementById(
-        "category-banner"
-    );
-
-    const bannerImage = document.getElementById(
-        "category-banner-image"
-    );
-
-    if (banner && bannerImage && category?.image) {
-        const imageURL = safeImageURL(category.image);
-
-        if (imageURL) {
-            bannerImage.src = imageURL;
-            bannerImage.alt = `${heading} — EXEGIS`;
-            banner.hidden = false;
-        }
-    }
-
-
-            document.title =
-                `${heading} — EXEGIS`;
+            // Category heading
 
             document
                 .getElementById("section-title")
                 ?.replaceChildren(
                     document.createTextNode(heading)
                 );
+
+            // Breadcrumb
 
             document
                 .getElementById("section-crumb")
@@ -513,11 +592,19 @@
                     )
                 );
 
+            // Description
+
             document
                 .getElementById("section-description")
                 ?.replaceChildren(
                     document.createTextNode(description)
                 );
+
+            // Large category image
+
+            renderCategoryBanner(current, heading);
+
+            // Real publications in this category
 
             const visible = types[current]
                 ? all.filter(
@@ -531,6 +618,8 @@
                     visible.map(card).join("");
             }
 
+            // Publication count
+
             if (count) {
                 count.textContent =
                     String(visible.length).padStart(
@@ -540,30 +629,27 @@
             }
 
             if (empty) {
-                empty.hidden =
-                    visible.length > 0;
+                empty.hidden = visible.length > 0;
             }
 
             return;
         }
 
+
         // =====================================
         // HOMEPAGE — MOST RECENTLY
         // =====================================
 
-        // Articles, Analysis, Opinion and Video only.
-        // Gift of the Day and Art are excluded.
+        // Only Articles, Analysis, Opinion, Videos.
 
         const lead = all.find(
-            entry =>
-                featuredTypes.has(entry.type)
+            entry => featuredTypes.has(entry.type)
         );
 
         const leadTarget =
             document.getElementById("lead-story");
 
         if (leadTarget) {
-
             leadTarget.innerHTML = lead
                 ? `
                     <article class="lead-story">
@@ -576,15 +662,11 @@
                         </a>
 
                         <div class="story-meta">
-
-                            <span>
-                                ${esc(label(lead))}
-                            </span>
+                            <span>${esc(label(lead))}</span>
 
                             <time datetime="${esc(lead.date)}">
                                 ${esc(dateText(lead.date))}
                             </time>
-
                         </div>
 
                         <h1>
@@ -605,15 +687,14 @@
                     </article>
                 `
                 : "";
-
         }
+
 
         // =====================================
         // HOMEPAGE — FROM THE JOURNAL
         // =====================================
 
-        // Always display the six categories.
-        // Never insert fictional articles here.
+        // Always six permanent category cards.
 
         if (target) {
             target.innerHTML =
@@ -632,8 +713,9 @@
         }
     }
 
+
     // =========================================
-    // INITIAL RENDER + LIVE PUBLICATIONS
+    // INITIAL RENDER AND LIVE PUBLICATIONS
     // =========================================
 
     display([]);
@@ -642,7 +724,7 @@
         .then(display)
         .catch(error => {
             console.warn(
-                "EXEGIS: live publications could not be loaded.",
+                "EXEGIS: live publications unavailable.",
                 error
             );
         });
