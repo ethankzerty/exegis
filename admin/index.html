@@ -1,0 +1,895 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Editor — EXEGIS</title>
+<meta name="robots" content="noindex, nofollow">
+
+<style>
+/* =====================================
+   EXEGIS — EDITOR PROTOTYPE
+   ===================================== */
+
+:root {
+    --paper: #f7f6f2;
+    --white: #fff;
+    --ink: #242321;
+    --muted: #77736c;
+    --line: #dcd9d2;
+    --accent: #665443;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.editor-shell {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 30px 80px;
+}
+
+/* HEADER */
+
+.editor-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--ink);
+}
+
+.editor-logo {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 31px;
+    letter-spacing: -1.5px;
+    text-decoration: none;
+}
+
+.editor-logo span {
+    color: #9b7451;
+}
+
+.editor-top-right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    font-size: 12px;
+}
+
+.prototype-tag {
+    color: var(--muted);
+    letter-spacing: 1px;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+/* INTRO */
+
+.editor-intro {
+    padding: 45px 0 32px;
+}
+
+.kicker {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.editor-intro h1 {
+    margin: 10px 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(38px, 5vw, 58px);
+    font-weight: normal;
+    letter-spacing: -1.8px;
+    line-height: 1.15;
+}
+
+.editor-intro p {
+    color: var(--muted);
+    max-width: 590px;
+}
+
+/* TWO-COLUMN WORKSPACE */
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(290px, 1fr);
+    align-items: start;
+    gap: 26px;
+}
+
+.editor-panel,
+.preview-panel {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 29px;
+}
+
+.panel-title {
+    margin: 0 0 24px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+/* FORM */
+
+.field {
+    margin-bottom: 24px;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.field-note {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.field input,
+.field textarea,
+.field select {
+    display: block;
+    width: 100%;
+    padding: 13px 14px;
+    background: #fff;
+    border: 1px solid #cbc7bf;
+    border-radius: 0;
+    color: var(--ink);
+    outline-offset: 3px;
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 105px;
+    line-height: 1.75;
+}
+
+.field textarea.long-body {
+    min-height: 320px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: #665443;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.section-divider {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 31px 0;
+}
+
+/* GIFTS */
+
+.gift-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.gift-selector button {
+    padding: 13px 5px;
+    border: 1px solid var(--line);
+    background: var(--white);
+}
+
+.gift-selector button[data-kind="song"].active {
+    background: #eae2d3;
+    border-color: #795536;
+}
+
+.gift-selector button[data-kind="painting"].active {
+    background: #dce6de;
+    border-color: #41614b;
+}
+
+.gift-selector button[data-kind="movie"].active {
+    background: #e2dde8;
+    border-color: #604b75;
+}
+
+/* ACTIONS */
+
+.editor-actions {
+    border-top: 1px solid var(--line);
+    padding-top: 23px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.action {
+    padding: 12px 20px;
+    border: 1px solid var(--ink);
+    background: var(--white);
+    color: var(--ink);
+}
+
+.action.primary {
+    color: #fff;
+    background: var(--ink);
+}
+
+.action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.action-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* PREVIEW */
+
+.preview-panel {
+    position: sticky;
+    top: 20px;
+}
+
+.preview-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.preview-category {
+    margin-top: 27px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.preview-panel h2 {
+    margin: 12px 0;
+    font: normal 34px/1.18 Georgia, "Times New Roman", serif;
+    overflow-wrap: anywhere;
+}
+
+.preview-summary {
+    color: #67635e;
+    font: italic 17px/1.6 Georgia, "Times New Roman", serif;
+    overflow-wrap: anywhere;
+}
+
+.preview-image {
+    display: block;
+    width: 100%;
+    max-height: 280px;
+    object-fit: cover;
+    margin: 23px 0;
+}
+
+.preview-body {
+    margin-top: 25px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font: 16px/1.85 Georgia, "Times New Roman", serif;
+}
+
+.preview-gift-tag {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 6px 11px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.preview-gift-tag.song {
+    background: #eae2d3;
+    color: #795536;
+}
+
+.preview-gift-tag.painting {
+    background: #dce6de;
+    color: #41614b;
+}
+
+.preview-gift-tag.movie {
+    background: #e2dde8;
+    color: #604b75;
+}
+
+.preview-meta {
+    padding-top: 18px;
+    margin-top: 27px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+}
+
+@media (max-width: 850px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 520px) {
+    .editor-shell {
+        padding: 0 15px 50px;
+    }
+
+    .editor-panel,
+    .preview-panel {
+        padding: 20px;
+    }
+
+    .field-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .editor-top-right {
+        gap: 10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="editor-shell">
+
+    <!-- HEADER -->
+
+    <header class="editor-top">
+        <a class="editor-logo" href="../index.html">
+            EXEGIS<span>.</span>
+        </a>
+
+        <div class="editor-top-right">
+            <span class="prototype-tag">Editor prototype</span>
+            <a href="../index.html">View journal ↗</a>
+        </div>
+    </header>
+
+    <!-- INTRODUCTION -->
+
+    <section class="editor-intro">
+        <div class="kicker">EXEGIS / PUBLISHING</div>
+
+        <h1>The Editor</h1>
+
+        <p>
+            A space to compose new publications.
+            Choose your format and begin writing.
+        </p>
+    </section>
+
+    <!-- WORKSPACE -->
+
+    <div class="editor-layout">
+
+        <main class="editor-panel">
+
+            <h2 class="panel-title">New publication</h2>
+
+            <!-- PUBLICATION TYPE -->
+
+            <div class="field">
+                <label for="publication-type">
+                    Publication category
+                </label>
+
+                <select id="publication-type">
+                    <option value="article">Article</option>
+                    <option value="analysis">Analysis</option>
+                    <option value="opinion">Opinion</option>
+                    <option value="art">Art</option>
+                    <option value="video">Video</option>
+                    <option value="to-read">Gift of the Day</option>
+                </select>
+            </div>
+
+            <!-- GIFT CATEGORY -->
+
+            <section id="gift-fields" hidden>
+                <div class="field">
+                    <label>Gift category</label>
+
+                    <div class="gift-selector">
+                        <button type="button"
+                                data-kind="song"
+                                class="active">
+                            ♪ Song
+                        </button>
+
+                        <button type="button"
+                                data-kind="painting">
+                            ◇ Painting
+                        </button>
+
+                        <button type="button"
+                                data-kind="movie">
+                            ▷ Movie
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TITLE -->
+
+            <div class="field">
+                <label for="publication-title" id="title-label">
+                    Publication title
+                </label>
+
+                <input
+                    id="publication-title"
+                    type="text"
+                    placeholder="The title of your next publication"
+                >
+            </div>
+
+            <!-- GIFT CREATOR -->
+
+            <div class="field" id="creator-field" hidden>
+                <label for="creator" id="creator-label">
+                    Creator
+                </label>
+
+                <input
+                    id="creator"
+                    type="text"
+                    placeholder="Name of the creator"
+                >
+            </div>
+
+            <!-- SUMMARY -->
+
+            <div class="field" id="summary-field">
+                <label for="publication-summary">
+                    Introduction / summary
+                </label>
+
+                <textarea
+                    id="publication-summary"
+                    rows="3"
+                    placeholder="Introduce your publication in a few sentences."
+                ></textarea>
+
+                <p class="field-note">
+                    This will also appear on the journal's
+                    publication cards.
+                </p>
+            </div>
+
+            <!-- ARTICLE BODY -->
+
+            <div class="field">
+                <label for="publication-body" id="body-label">
+                    Article body
+                </label>
+
+                <textarea
+                    id="publication-body"
+                    class="long-body"
+                    placeholder="Begin writing..."
+                ></textarea>
+
+                <p class="field-note" id="body-note">
+                    Plain text for this first prototype.
+                    Rich-text formatting will be added later.
+                </p>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- MEDIA -->
+
+            <h2 class="panel-title">Media and details</h2>
+
+            <div class="field">
+                <label for="image-url">
+                    Image URL
+                </label>
+
+                <input
+                    id="image-url"
+                    type="url"
+                    placeholder="https://..."
+                >
+
+                <p class="field-note">
+                    Temporary image URL field.
+                    We'll add direct image uploads.
+                </p>
+            </div>
+
+            <div class="field" id="video-field" hidden>
+                <label for="video-url">
+                    Video or media link
+                </label>
+
+                <input
+                    id="video-url"
+                    type="url"
+                    placeholder="https://youtube.com/..."
+                >
+            </div>
+
+            <div class="field" id="tags-field">
+                <label for="publication-tags">
+                    Tags
+                </label>
+
+                <input
+                    id="publication-tags"
+                    type="text"
+                    placeholder="culture, literature, reflection"
+                >
+
+                <p class="field-note">
+                    Separate tags with commas.
+                </p>
+            </div>
+
+            <div class="field-row">
+
+                <div class="field">
+                    <label for="publication-date">
+                        Publication date
+                    </label>
+
+                    <input
+                        id="publication-date"
+                        type="date"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="comments-enabled">
+                        Comments
+                    </label>
+
+                    <select id="comments-enabled">
+                        <option value="true">
+                            Allowed
+                        </option>
+
+                        <option value="false">
+                            Disabled
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+
+            <div class="editor-actions">
+
+                <button class="action" type="button" disabled>
+                    Save draft
+                </button>
+
+                <button class="action primary"
+                        type="button"
+                        disabled>
+                    Publish →
+                </button>
+
+            </div>
+
+            <p class="action-note">
+                Publishing is disabled in this prototype.
+                No content is saved or sent to a server.
+            </p>
+
+        </main>
+
+        <!-- LIVE PREVIEW -->
+
+        <aside class="preview-panel">
+
+            <div class="preview-label">
+                LIVE PREVIEW / EXEGIS
+            </div>
+
+            <div id="preview-gift" hidden
+                 class="preview-gift-tag song">
+                Song of the Day
+            </div>
+
+            <div class="preview-category"
+                 id="preview-category">
+                Article
+            </div>
+
+            <h2 id="preview-title">
+                Your publication title
+            </h2>
+
+            <p class="preview-summary"
+               id="preview-summary">
+                Your introduction will appear here.
+            </p>
+
+            <img
+                id="preview-image"
+                class="preview-image"
+                alt="Publication preview"
+                hidden
+            >
+
+            <div class="preview-body"
+                 id="preview-body">
+                Your writing will appear here as you type.
+            </div>
+
+            <div class="preview-meta" id="preview-meta">
+                EXEGIS · Draft
+            </div>
+
+        </aside>
+
+    </div>
+
+</div>
+
+<script>
+/* =====================================
+   EXEGIS — EDITOR INTERACTIONS
+   Prototype only: no database writes
+   ===================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const $ = id => document.getElementById(id);
+
+    const type = $("publication-type");
+    const title = $("publication-title");
+    const summary = $("publication-summary");
+    const body = $("publication-body");
+    const creator = $("creator");
+    const imageURL = $("image-url");
+    const date = $("publication-date");
+
+    let giftKind = "song";
+
+    const labels = {
+        article: "Article",
+        analysis: "Analysis",
+        opinion: "Opinion",
+        art: "Art",
+        video: "Video",
+        "to-read": "Gift of the Day"
+    };
+
+    const giftLabels = {
+        song: "Song of the Day",
+        painting: "Painting of the Day",
+        movie: "Movie of the Day"
+    };
+
+    const creatorLabels = {
+        song: "Musician / composer",
+        painting: "Artist",
+        movie: "Director"
+    };
+
+    // Set initial date
+
+    const now = new Date();
+    const localDate = new Date(
+        now.getTime() - now.getTimezoneOffset() * 60000
+    );
+
+    date.value = localDate.toISOString().slice(0, 10);
+
+    // Adjust the editor to the category
+
+    function updateTemplate() {
+
+        const selected = type.value;
+        const isGift = selected === "to-read";
+        const isArt = selected === "art";
+        const isVideo = selected === "video";
+
+        $("gift-fields").hidden = !isGift;
+        $("creator-field").hidden = !(isGift || isArt);
+        $("summary-field").hidden = isGift;
+        $("video-field").hidden = !(isVideo || isGift);
+        $("tags-field").hidden = isGift;
+
+        $("title-label").textContent = isGift
+            ? "Name of the work"
+            : isArt
+                ? "Artwork / publication title"
+                : "Publication title";
+
+        $("body-label").textContent = isGift
+            ? "A few words about your choice"
+            : isArt
+                ? "Description / commentary"
+                : isVideo
+                    ? "Accompanying text"
+                    : "Article body";
+
+        $("publication-body").classList.toggle(
+            "long-body",
+            !isGift
+        );
+
+        $("body-note").textContent = isGift
+            ? "Keep it short, or write more if you wish."
+            : "Plain text for now. Rich-text formatting will be added later.";
+
+        $("creator-label").textContent = isGift
+            ? creatorLabels[giftKind]
+            : "Artist / creator";
+
+        title.placeholder = isGift
+            ? "Name of the song, painting or film"
+            : "The title of your publication";
+
+        updatePreview();
+    }
+
+    // Select a Gift of the Day category
+
+    document.querySelectorAll(
+        "[data-kind]"
+    ).forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            giftKind = button.dataset.kind;
+
+            document.querySelectorAll(
+                "[data-kind]"
+            ).forEach(item => {
+                item.classList.toggle(
+                    "active",
+                    item === button
+                );
+            });
+
+            updateTemplate();
+        });
+    });
+
+    // Preview changes instantly
+
+    function updatePreview() {
+
+        const selected = type.value;
+        const isGift = selected === "to-read";
+
+        $("preview-category").textContent =
+            labels[selected];
+
+        $("preview-title").textContent =
+            title.value.trim() ||
+            "Your publication title";
+
+        if (isGift) {
+
+            $("preview-summary").textContent =
+                creator.value.trim() || "";
+
+        } else {
+
+            $("preview-summary").textContent =
+                summary.value.trim() ||
+                "Your introduction will appear here.";
+        }
+
+        $("preview-body").textContent =
+            body.value.trim() ||
+            "Your writing will appear here as you type.";
+
+        const giftTag = $("preview-gift");
+
+        giftTag.hidden = !isGift;
+        giftTag.textContent = giftLabels[giftKind];
+        giftTag.className =
+            "preview-gift-tag " + giftKind;
+
+        const image = $("preview-image");
+        const candidate = imageURL.value.trim();
+
+        // Preview only HTTPS images
+
+        if (/^https:\/\/[^ ]+$/i.test(candidate)) {
+            image.src = candidate;
+            image.hidden = false;
+        } else {
+            image.removeAttribute("src");
+            image.hidden = true;
+        }
+
+        $("preview-meta").textContent =
+            "EXEGIS · " +
+            (date.value || "Undated") +
+            " · Draft";
+    }
+
+    // Hide images that cannot be loaded
+
+    $("preview-image").addEventListener(
+        "error",
+        () => {
+            $("preview-image").hidden = true;
+        }
+    );
+
+    // Listen for form changes
+
+    document.querySelectorAll(
+        "input, textarea, select"
+    ).forEach(field => {
+
+        field.addEventListener("input", updatePreview);
+        field.addEventListener("change", updatePreview);
+
+    });
+
+    type.addEventListener("change", updateTemplate);
+
+    updateTemplate();
+
+});
+</script>
+
+</body>
+</html>
