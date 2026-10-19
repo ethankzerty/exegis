@@ -75,7 +75,7 @@
         { key: "articles", image: "images/Articles.jpg" },
         { key: "analysis", image: "images/Analysis.jpg" },
         { key: "opinion", image: "images/opinion.jpg" },
-        { key: "videos", image: "" },
+        { key: "videos", image: "images/video.png" },
         { key: "art", image: "images/art.jpg" },
         { key: "to-read", image: "images/gift of the day.png" }
     ];
