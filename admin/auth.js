@@ -132,15 +132,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const authorized = await checkAdmin();
 
-        if (authorized) {
-            login.hidden = true;
-            if (intro) intro.hidden = false;
-            if (editor) editor.hidden = false;
-        } else {
-            login.hidden = false;
-            if (intro) intro.hidden = true;
-            if (editor) editor.hidden = true;
-        }
+        document.body.classList.toggle(
+    "admin-authorized",
+    authorized
+);
+
+login.hidden = authorized;
 
         return authorized;
     }
