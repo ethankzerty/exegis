@@ -6,7 +6,7 @@
 <!-- SUPABASE AUTHENTICATION LIBRARY -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="../js/supabase-config.js"></script>
-<script defer src="auth.js?v=3"></script>
+
 
 
 <meta charset="UTF-8">
@@ -390,22 +390,7 @@ button {
     }
 }
 
-/* Keep the editor hidden until administrator
-   authentication has completed. */
-
-.editor-intro,
-.editor-layout {
-    display: none;
-}
-
-body.admin-authorized .editor-intro,
-body.admin-authorized .editor-layout {
-    display: block;
-}
-
-body.admin-authorized .editor-layout {
-    display: grid;
-}
+/* The [hidden] attribute controls all private content visibility. */
 
 </style>
 </head>
@@ -428,9 +413,25 @@ body.admin-authorized .editor-layout {
         </div>
     </header>
 
+
+    <!-- LOGIN IS VISIBLE UNTIL SERVER AUTHORIZATION SUCCEEDS -->
+    <section id="admin-login" class="editor-panel" style="max-width:450px;margin:65px auto;">
+        <div class="kicker">EXEGIS / ADMINISTRATION</div>
+        <h1 style="font:normal 36px Georgia,serif;margin:12px 0;">Administrator access</h1>
+        <p style="color:var(--muted);">Sign in to manage EXEGIS publications.</p>
+        <form id="admin-login-form">
+            <div class="field"><label for="admin-email">Email address</label>
+                <input id="admin-email" type="email" autocomplete="username" required></div>
+            <div class="field"><label for="admin-password">Password</label>
+                <input id="admin-password" type="password" autocomplete="current-password" required></div>
+            <button class="action primary" type="submit">Sign in</button>
+        </form>
+        <p id="admin-status" role="status" aria-live="polite"></p>
+    </section>
+
     <!-- INTRODUCTION -->
 
-    <section class="editor-intro">
+    <section class="editor-intro" id="editor-intro" hidden>
         <div class="kicker">EXEGIS / PUBLISHING</div>
 
         <h1>The Editor</h1>
@@ -443,7 +444,7 @@ body.admin-authorized .editor-layout {
 
     <!-- WORKSPACE -->
 
-    <div class="editor-layout">
+    <div class="editor-layout" id="editor-layout" hidden>
 
         <main class="editor-panel">
 
@@ -914,6 +915,89 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateTemplate();
 
+});
+</script>
+
+
+<script>
+/* EXEGIS — SINGLE-FILE ADMIN AUTHENTICATION */
+document.addEventListener("DOMContentLoaded", async () => {
+    const login = document.getElementById("admin-login");
+    const intro = document.getElementById("editor-intro");
+    const editor = document.getElementById("editor-layout");
+    const logout = document.getElementById("admin-logout");
+    const status = document.getElementById("admin-status");
+    const form = document.getElementById("admin-login-form");
+    let client;
+
+    function showEditor(allowed) {
+        login.hidden = allowed;
+        intro.hidden = !allowed;
+        editor.hidden = !allowed;
+        logout.hidden = !allowed;
+    }
+    showEditor(false);
+
+    if (!window.supabase || typeof SUPABASE_URL === "undefined" ||
+        typeof SUPABASE_PUBLISHABLE_KEY === "undefined") {
+        status.textContent = "Authentication could not load. Refresh the page.";
+        return;
+    }
+
+    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+    });
+
+    async function isAuthorized() {
+        const { data: userData, error: userError } = await client.auth.getUser();
+        if (userError || !userData?.user) return false;
+        const { data, error } = await client.rpc("is_exegis_admin");
+        if (error) throw new Error("Administrator check failed: " + error.message);
+        return data === true;
+    }
+
+    async function refresh() {
+        const allowed = await isAuthorized();
+        showEditor(allowed);
+        return allowed;
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const button = form.querySelector('button[type="submit"]');
+        button.disabled = true;
+        status.textContent = "Checking your administrator access...";
+        try {
+            const email = document.getElementById("admin-email").value.trim();
+            const password = document.getElementById("admin-password").value;
+            const { error } = await client.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            if (!(await refresh())) {
+                await client.auth.signOut();
+                showEditor(false);
+                status.textContent = "This account is not an EXEGIS administrator.";
+                return;
+            }
+            form.reset();
+            status.textContent = "";
+        } catch (error) {
+            showEditor(false);
+            status.textContent = error.message || "Unable to sign in.";
+        } finally { button.disabled = false; }
+    });
+
+    logout.addEventListener("click", async () => {
+        const { error } = await client.auth.signOut();
+        if (error) { alert("Sign out failed: " + error.message); return; }
+        showEditor(false);
+        status.textContent = "You have signed out.";
+    });
+
+    try { await refresh(); }
+    catch (error) {
+        showEditor(false);
+        status.textContent = error.message || "Cannot verify administrator access.";
+    }
 });
 </script>
 
