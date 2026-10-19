@@ -73,11 +73,11 @@
 
     const journalCategories = [
         { key: "articles", image: "images/Articles.jpg" },
-    { key: "analysis", image: "images/Analysis.jpg" },
-    { key: "opinion", image: "images/opinion.jpg" },
+        { key: "analysis", image: "images/Analysis.jpg" },
+        { key: "opinion", image: "images/opinion.jpg" },
         { key: "videos", image: "" },
-        { key: "art", image: "images/art.png" },
-    { key: "to-read", image: "images/gift of the day.png" }
+        { key: "art", image: "images/art.jpg" },
+        { key: "to-read", image: "images/gift of the day.png" }
     ];
 
     // Only editorial publications appear
