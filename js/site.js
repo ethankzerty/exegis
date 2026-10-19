@@ -72,8 +72,8 @@
     // have been selected.
 
     const journalCategories = [
-        { key: "articles", image: "images/articles.jpg" },
-    { key: "analysis", image: "images/analysis.jpg" },
+        { key: "articles", image: "images/Articles.jpg" },
+    { key: "analysis", image: "images/Analysis.jpg" },
     { key: "opinion", image: "images/opinion.jpg" },
         { key: "videos", image: "" },
         { key: "art", image: "images/art.png" },
