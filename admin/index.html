@@ -685,16 +685,15 @@ button {
                     Save draft
                 </button>
 
-                <button class="action primary"
-                        type="button"
-                        disabled>
+                <button class="action primary" id="publish-publication"
+                        type="button" disabled>
                     Publish →
                 </button>
 
             </div>
 
             <p class="action-note">
-                Drafts are private and saved in Supabase. Publishing is not enabled yet.
+                Drafts are private in Supabase. Publishing archives the publication on GitHub and marks it as published in Supabase. It will appear on the public journal after we connect the journal feed.
             </p>
             <p id="draft-message" role="status" aria-live="polite"></p>
 
@@ -1089,6 +1088,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         logout.hidden = !allowed;
         document.getElementById("draft-library").hidden = !allowed;
         document.getElementById("save-draft").disabled = !allowed;
+        document.getElementById("publish-publication").disabled = !allowed;
         if (!allowed) window.EXEGIS_ADMIN_CLIENT = null;
     }
     showEditor(false);
@@ -1162,15 +1162,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 <script>
-/* EXEGIS — PRIVATE DRAFTS. No publishing operations. */
+/* EXEGIS — PRIVATE DRAFTS AND SERVER-VERIFIED PUBLISHING. */
 document.addEventListener("DOMContentLoaded", () => {
     const $ = id => document.getElementById(id);
     const save = $("save-draft");
+    const publish = $("publish-publication");
     const list = $("draft-list");
     const status = $("draft-message");
     let currentId = null;
     let currentSlug = null;
     let saving = false;
+    let publishing = false;
+    let completedPublication = false;
 
     function message(text, error = false) {
         status.textContent = text;
@@ -1220,10 +1223,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return { client, user };
     }
 
-    save.addEventListener("click", async () => {
-        if (saving) return;
+    // Keep the original draft-save behavior, and reuse it for Publish.
+    // Only the Edge Function can perform the GitHub archive operation.
+    async function saveDraft() {
+        if (saving) throw new Error("A draft is already being saved.");
         saving = true;
         save.disabled = true;
+        publish.disabled = true;
         message("Saving draft...");
         try {
             const { client, user } = await getAuthorizedUser();
@@ -1238,15 +1244,84 @@ document.addEventListener("DOMContentLoaded", () => {
             currentSlug = data.slug;
             message("Draft saved privately in Supabase.");
             await loadDrafts();
-        } catch (err) {
-            message(err.message || "Draft could not be saved.", true);
+            return { client, id: data.id };
         } finally {
             saving = false;
-            if (window.EXEGIS_ADMIN_CLIENT) save.disabled = false;
+            const authorized = Boolean(window.EXEGIS_ADMIN_CLIENT);
+            save.disabled = !authorized || publishing;
+            publish.disabled = !authorized || publishing;
+        }
+    }
+
+    save.addEventListener("click", async () => {
+        if (saving || publishing || completedPublication) return;
+        try {
+            await saveDraft();
+        } catch (err) {
+            message(err.message || "Draft could not be saved.", true);
+        }
+    });
+
+    publish.addEventListener("click", async () => {
+        if (saving || publishing || completedPublication) return;
+        const title = $("publication-title").value.trim();
+        if (!title) {
+            message("Please enter a title before publishing.", true);
+            return;
+        }
+        if (!window.confirm(`Publish “${title}” to the EXEGIS archive?`)) return;
+
+        publishing = true;
+        save.disabled = true;
+        publish.disabled = true;
+        publish.textContent = "Publishing...";
+        try {
+            // Save the latest rich-text and metadata before publishing.
+            const { client, id } = await saveDraft();
+            message("Draft saved. Archiving publication on GitHub...");
+
+            const { data, error } = await client.functions.invoke(
+                "publish-exegis", {
+                    body: { publication_id: id }
+                }
+            );
+            if (error) {
+                let detail = error.message || "Publishing request failed.";
+                if (error.context && typeof error.context.json === "function") {
+                    try {
+                        const payload = await error.context.json();
+                        if (payload && payload.error) detail = payload.error;
+                    } catch { /* Keep the original error. */ }
+                }
+                throw new Error(detail);
+            }
+            if (!data || data.success !== true) {
+                throw new Error((data && data.error) || "Publishing was not confirmed.");
+            }
+
+            message(`Published and archived on GitHub: ${data.archive_path}. The public journal feed will be connected next.`);
+            currentId = null;
+            currentSlug = null;
+            completedPublication = true;
+            await loadDrafts();
+            publish.disabled = true;
+            save.disabled = true;
+            // A new draft can be started with the "+ New draft" button.
+        } catch (err) {
+            message(err.message || "Publishing failed. Your draft remains available in Supabase.", true);
+        } finally {
+            publishing = false;
+            publish.textContent = "Publish →";
+            const authorized = Boolean(window.EXEGIS_ADMIN_CLIENT);
+            save.disabled = !authorized || completedPublication;
+            publish.disabled = !authorized || completedPublication;
         }
     });
 
     function editDraft(draft) {
+        completedPublication = false;
+        save.disabled = false;
+        publish.disabled = false;
         currentId = draft.id;
         currentSlug = draft.slug;
         $("publication-type").value = draft.type;
@@ -1298,6 +1373,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     $("new-draft").addEventListener("click", () => {
+        completedPublication = false;
+        if (window.EXEGIS_ADMIN_CLIENT) {
+            save.disabled = false;
+            publish.disabled = false;
+        }
         currentId = null;
         currentSlug = null;
         ["publication-title", "publication-summary", "creator", "image-url", "video-url", "publication-tags"]
