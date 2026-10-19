@@ -124,28 +124,70 @@
             <div class="post-body">${sanitizeBody(entry.body)}</div>`;
     }
 
-    const original = Array.isArray(window.ARCHIVE_ENTRIES) ? window.ARCHIVE_ENTRIES : [];
-    const archived = original.find(item => item && item.slug === slug && !item.draft);
-    if (archived) render(archived);
-    else target.innerHTML = `<p class="post-meta">Loading publication…</p>`;
+    
+    // =========================================
+    // LOAD PUBLISHED PUBLICATION
+    // =========================================
+
+    target.innerHTML =
+        `<p class="post-meta">Loading publication…</p>`;
 
     async function load() {
         if (!slug) return null;
-        const endpoint = new URL("/rest/v1/publications", SUPABASE_PUBLIC_URL);
-        endpoint.searchParams.set("select", "slug,title,type,summary,body,image,image_alt,video_url,creator,gift_kind,publication_date,published_at");
+
+        const endpoint = new URL(
+            "/rest/v1/publications",
+            SUPABASE_PUBLIC_URL
+        );
+
+        endpoint.searchParams.set(
+            "select",
+            "slug,title,type,summary,body,image,image_alt,video_url,creator,gift_kind,publication_date,published_at"
+        );
+
         endpoint.searchParams.set("slug", "eq." + slug);
         endpoint.searchParams.set("status", "eq.published");
         endpoint.searchParams.set("limit", "1");
+
         const response = await fetch(endpoint.href, {
-            headers: { "apikey": SUPABASE_PUBLIC_KEY }, cache: "no-store"
+            headers: {
+                "apikey": SUPABASE_PUBLIC_KEY
+            },
+            cache: "no-store"
         });
-        if (!response.ok) throw new Error("Publication request failed: " + response.status);
+
+        if (!response.ok) {
+            throw new Error(
+                "Publication request failed: " +
+                response.status
+            );
+        }
+
         const rows = await response.json();
-        return Array.isArray(rows) && rows.length ? publishedEntry(rows[0]) : null;
+
+        return Array.isArray(rows) && rows.length
+            ? publishedEntry(rows[0])
+            : null;
     }
 
-    load().then(entry => render(entry || archived)).catch(error => {
-        console.warn("EXEGIS: live publication unavailable.", error);
-        render(archived);
-    });
+    load()
+        .then(render)
+        .catch(error => {
+            console.warn(
+                "EXEGIS: publication unavailable.",
+                error
+            );
+
+            target.innerHTML = `
+                <h1>Publication unavailable</h1>
+                <p>
+                    We couldn't load this publication
+                    right now. Please try again later.
+                </p>
+                <a href="section.html?section=archives">
+                    Return to archives →
+                </a>
+            `;
+        });
+
 })();
