@@ -390,6 +390,21 @@ button {
     }
 }
 
+
+/* Rich text editor: same restrained EXEGIS typography */
+.rich-toolbar { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px; background: #f7f6f2; border: 1px solid #cbc7bf; border-bottom: 0; }
+.rich-toolbar button { min-width: 34px; padding: 5px 9px; border: 1px solid #dcd9d2; background: white; color: #242321; font-size: 12px; }
+.rich-toolbar button:hover, .rich-toolbar button:focus-visible { background: #eae5db; }
+.rich-editor { min-height: 320px; padding: 16px; border: 1px solid #cbc7bf; background: white; outline-offset: 3px; font: 16px/1.85 Georgia, "Times New Roman", serif; overflow-wrap: anywhere; }
+.rich-editor.short-body { min-height: 130px; }
+.rich-editor:empty::before { content: attr(data-placeholder); color: #948d85; pointer-events: none; }
+.rich-editor h2, .preview-body h2 { font: normal 27px/1.35 Georgia,serif; margin: 1.1em 0 .5em; }
+.rich-editor h3, .preview-body h3 { font: normal 21px/1.35 Georgia,serif; margin: 1em 0 .5em; }
+.rich-editor blockquote, .preview-body blockquote { margin: 1.2em 0; padding-left: 17px; border-left: 2px solid #9b7451; color: #67635e; font-style: italic; }
+.rich-editor img, .preview-body img { max-width: 100%; height: auto; display: block; margin: 18px auto; }
+.rich-editor p, .preview-body p { margin: 0 0 1em; }
+.preview-body { white-space: normal; }
+
 /* The [hidden] attribute controls all private content visibility. */
 
 /* Saved draft list */
@@ -558,15 +573,25 @@ button {
                     Article body
                 </label>
 
-                <textarea
-                    id="publication-body"
-                    class="long-body"
-                    placeholder="Begin writing..."
-                ></textarea>
+                <div class="rich-toolbar" id="rich-toolbar" aria-label="Text formatting">
+                    <button type="button" data-command="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
+                    <button type="button" data-command="italic" title="Italic (Ctrl+I)"><em>I</em></button>
+                    <button type="button" data-block="h2" title="Heading">H2</button>
+                    <button type="button" data-block="h3" title="Subheading">H3</button>
+                    <button type="button" data-block="p" title="Paragraph">¶</button>
+                    <button type="button" data-block="blockquote" title="Quotation">❝</button>
+                    <button type="button" data-command="insertUnorderedList" title="Bulleted list">• List</button>
+                    <button type="button" data-command="insertOrderedList" title="Numbered list">1. List</button>
+                    <button type="button" id="rich-link" title="Insert a hyperlink">Link</button>
+                    <button type="button" id="rich-image" title="Insert an image from a URL">Image</button>
+                    <button type="button" data-command="removeFormat" title="Clear formatting">Clear</button>
+                </div>
+                <div id="publication-body" class="rich-editor" contenteditable="true"
+                    role="textbox" aria-multiline="true" aria-label="Article body"
+                    data-placeholder="Begin writing..."></div>
 
                 <p class="field-note" id="body-note">
-                    Plain text for this first prototype.
-                    Rich-text formatting will be added later.
+                    Format your writing with the toolbar. Save draft to preserve formatting.
                 </p>
             </div>
 
@@ -734,6 +759,102 @@ button {
 </div>
 
 <script>
+/* EXEGIS rich text: controlled HTML for draft storage and safe previews. */
+(function () {
+    const allowed = new Set(["P", "DIV", "BR", "H2", "H3", "STRONG", "B", "EM", "I", "BLOCKQUOTE", "UL", "OL", "LI", "A", "IMG"]);
+    function safeURL(value, image) {
+        try {
+            const url = new URL(value, window.location.href);
+            return (image ? url.protocol === "https:" : ["https:", "http:"].includes(url.protocol)) ? url.href : null;
+        } catch { return null; }
+    }
+    function cleanHTML(html) {
+        const template = document.createElement("template");
+        template.innerHTML = html;
+        const output = document.createElement("div");
+        function copyChildren(from, to) {
+            [...from.childNodes].forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    to.appendChild(document.createTextNode(node.textContent));
+                    return;
+                }
+                if (node.nodeType !== Node.ELEMENT_NODE) return;
+                if (["SCRIPT", "STYLE", "IFRAME", "SVG", "MATH", "FORM", "OBJECT", "TEMPLATE"].includes(node.tagName)) return;
+                if (!allowed.has(node.tagName)) { copyChildren(node, to); return; }
+                const name = {DIV:"P", B:"STRONG", I:"EM"}[node.tagName] || node.tagName;
+                const next = document.createElement(name.toLowerCase());
+                if (name === "A") {
+                    const href = safeURL(node.getAttribute("href") || "", false);
+                    if (href) { next.href = href; next.rel = "noopener noreferrer"; next.target = "_blank"; }
+                    else { copyChildren(node, to); return; }
+                }
+                if (name === "IMG") {
+                    const src = safeURL(node.getAttribute("src") || "", true);
+                    if (!src) return;
+                    next.src = src;
+                    next.alt = (node.getAttribute("alt") || "").slice(0, 250);
+                } else { copyChildren(node, next); }
+                to.appendChild(next);
+            });
+        }
+        copyChildren(template.content, output);
+        return output.innerHTML;
+    }
+    const escapeText = text => { const d = document.createElement("div"); d.textContent = text; return d.innerHTML; };
+    function fromStored(value) {
+        if (!value) return "";
+        // Old EXEGIS drafts stored unformatted plain text, not HTML.
+        if (!/^\s*<(?:p|div|h2|h3|blockquote|ul|ol|br|strong|em|b|i|img|a)\b/i.test(value))
+            return value.split(/\r?\n/).map(line => `<p>${escapeText(line) || "<br>"}</p>`).join("");
+        return cleanHTML(value);
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+        const editor = document.getElementById("publication-body");
+        const notify = () => editor.dispatchEvent(new Event("input", {bubbles:true}));
+        window.EXEGIS_RICH = {
+            getHTML: () => cleanHTML(editor.innerHTML).trim(),
+            setHTML: value => { editor.innerHTML = fromStored(value); notify(); }
+        };
+        document.querySelectorAll("#rich-toolbar [data-command], #rich-toolbar [data-block]").forEach(button => {
+            button.addEventListener("mousedown", event => event.preventDefault());
+            button.addEventListener("click", () => {
+                editor.focus();
+                if (button.dataset.block) document.execCommand("formatBlock", false, button.dataset.block);
+                else document.execCommand(button.dataset.command, false, null);
+                notify();
+            });
+        });
+        document.getElementById("rich-link").addEventListener("mousedown", e => e.preventDefault());
+        document.getElementById("rich-link").addEventListener("click", () => {
+            const url = prompt("Link URL (https://...)");
+            if (url === null) return;
+            const safe = safeURL(url.trim(), false);
+            if (!safe) { alert("Please enter a valid http:// or https:// link."); return; }
+            editor.focus();
+            document.execCommand("createLink", false, safe);
+            notify();
+        });
+        document.getElementById("rich-image").addEventListener("mousedown", e => e.preventDefault());
+        document.getElementById("rich-image").addEventListener("click", () => {
+            const url = prompt("HTTPS image URL:");
+            if (url === null) return;
+            const safe = safeURL(url.trim(), true);
+            if (!safe) { alert("Please enter an HTTPS image URL."); return; }
+            editor.focus();
+            document.execCommand("insertImage", false, safe);
+            notify();
+        });
+        editor.addEventListener("paste", e => {
+            e.preventDefault();
+            const value = e.clipboardData.getData("text/plain");
+            document.execCommand("insertText", false, value);
+            notify();
+        });
+    });
+})();
+</script>
+
+<script>
 /* =====================================
    EXEGIS — EDITOR INTERACTIONS
    Prototype only: no database writes
@@ -824,14 +945,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     ? "Accompanying text"
                     : "Article body";
 
-        $("publication-body").classList.toggle(
-            "long-body",
-            !isGift
-        );
+        $("publication-body").classList.toggle("short-body", isGift);
 
         $("body-note").textContent = isGift
             ? "Keep it short, or write more if you wish."
-            : "Plain text for now. Rich-text formatting will be added later.";
+            : "Use the toolbar for headings, emphasis, quotes, links and images.";
 
         $("creator-label").textContent = isGift
             ? creatorLabels[giftKind]
@@ -893,8 +1011,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Your introduction will appear here.";
         }
 
-        $("preview-body").textContent =
-            body.value.trim() ||
+        const formatted = window.EXEGIS_RICH.getHTML();
+        $("preview-body").innerHTML = formatted ||
             "Your writing will appear here as you type.";
 
         const giftTag = $("preview-gift");
@@ -942,6 +1060,8 @@ document.addEventListener("DOMContentLoaded", () => {
         field.addEventListener("change", updatePreview);
 
     });
+
+    body.addEventListener("input", updatePreview);
 
     type.addEventListener("change", updateTemplate);
 
@@ -1068,7 +1188,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function collect(userId) {
         const type = $("publication-type").value;
         const title = $("publication-title").value.trim();
-        const body = $("publication-body").value;
+        const body = window.EXEGIS_RICH.getHTML();
         const creator = $("creator").value.trim();
         const summary = type === "to-read" ? creator : $("publication-summary").value.trim();
         return {
@@ -1132,7 +1252,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $("publication-type").value = draft.type;
         $("publication-title").value = draft.title || "";
         $("publication-summary").value = draft.summary || "";
-        $("publication-body").value = draft.body || "";
+        window.EXEGIS_RICH.setHTML(draft.body || "");
         $("creator").value = draft.creator || "";
         $("image-url").value = draft.image || "";
         $("video-url").value = draft.video_url || "";
@@ -1180,8 +1300,9 @@ document.addEventListener("DOMContentLoaded", () => {
     $("new-draft").addEventListener("click", () => {
         currentId = null;
         currentSlug = null;
-        ["publication-title", "publication-summary", "publication-body", "creator", "image-url", "video-url", "publication-tags"]
+        ["publication-title", "publication-summary", "creator", "image-url", "video-url", "publication-tags"]
             .forEach(id => { $(id).value = ""; });
+        window.EXEGIS_RICH.setHTML("");
         $("publication-type").value = "article";
         $("comments-enabled").value = "true";
         const now = new Date();
