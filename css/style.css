@@ -237,3 +237,61 @@
     right: auto;
     z-index: 200;
 }
+
+/* =========================================
+   EXEGIS — JOURNAL CATEGORY VIGNETTES
+   ========================================= */
+
+/* Preserve the original card proportions */
+
+.journal-category-card {
+    min-width: 0;
+}
+
+/* Category images and placeholder backgrounds */
+
+.journal-category-card .story-art {
+    display: block;
+    width: 100%;
+    height: 149px;
+    overflow: hidden;
+}
+
+.journal-category-card .story-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+/* Subtle image movement on hover */
+
+.journal-category-card:hover .story-art img {
+    transform: scale(1.025);
+}
+
+/* Category titles */
+
+.journal-category-card h3 {
+    font: 400 18px/1.45 var(--serif);
+    letter-spacing: -0.025em;
+    margin: 11px 0 9px;
+}
+
+/* Category navigation links */
+
+.journal-category-card .read-link {
+    margin-top: 5px;
+}
+
+/* Mobile dimensions */
+
+@media (max-width: 520px) {
+    .journal-category-card .story-art {
+        height: 110px;
+    }
+
+    .journal-category-card h3 {
+        font-size: 15px;
+    }
+}
