@@ -7,28 +7,38 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1">
 
-    <title>Sign In — EXEGIS</title>
+    <title>Sign In — APORIA</title>
 
-    <meta name="description"
-          content="Sign in to EXEGIS Discussions.">
+    <meta
+        name="description"
+        content="Sign in to APORIA Discussions."
+    >
 
+    <!-- STYLESHEETS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
 
-    <script defer
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-    </script>
+    <!-- SUPABASE LIBRARY -->
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"
+    ></script>
 
+    <!-- SUPABASE CONFIGURATION -->
     <script defer src="js/supabase-config.js"></script>
+
+    <!-- AUTHENTICATION -->
     <script defer src="js/auth.js"></script>
 
 </head>
 
-<body>
+<body id="top">
 
     <div class="site">
 
-        <!-- HEADER -->
+        <!-- ===================================== -->
+        <!-- HEADER                               -->
+        <!-- ===================================== -->
 
         <header class="journal-header">
 
@@ -40,7 +50,7 @@
             <div class="masthead">
 
                 <a href="index.html" class="wordmark">
-                    EXEGIS<span class="masthead-dot">.</span>
+                    APORIA<span class="masthead-dot">.</span>
                 </a>
 
                 <div class="masthead-sub">
@@ -58,13 +68,17 @@
         </header>
 
 
-        <!-- LOGIN -->
+        <!-- ===================================== -->
+        <!-- LOGIN                                -->
+        <!-- ===================================== -->
 
         <main class="auth-main">
 
             <section class="auth-panel">
 
-                <p class="eyebrow">EXEGIS DISCUSSIONS</p>
+                <p class="eyebrow">
+                    APORIA DISCUSSIONS
+                </p>
 
                 <h1>Welcome back</h1>
 
@@ -74,7 +88,9 @@
                 </p>
 
 
-                <!-- SIGN-IN FORM -->
+                <!-- ===================================== -->
+                <!-- SIGN-IN FORM                         -->
+                <!-- ===================================== -->
 
                 <form id="login-form">
 
@@ -103,15 +119,19 @@
                     >
 
 
-                    <button type="submit"
-                            class="auth-submit">
+                    <button
+                        type="submit"
+                        class="auth-submit"
+                    >
                         Sign in
                     </button>
 
                 </form>
 
 
-                <!-- SIGNED-IN ACCOUNT PANEL -->
+                <!-- ===================================== -->
+                <!-- SIGNED-IN ACCOUNT PANEL              -->
+                <!-- ===================================== -->
 
                 <div id="account-panel" hidden>
 
@@ -121,54 +141,74 @@
 
                     <p>
                         Your account is ready.
-                        Discussions will be available
-                        once the forum pages are connected.
+                        You can now participate in
+                        APORIA Discussions.
                     </p>
 
-                    <button id="logout-button"
-                            type="button"
-                            class="auth-submit">
+                    <button
+                        id="logout-button"
+                        type="button"
+                        class="auth-submit"
+                    >
                         Sign out
                     </button>
 
                 </div>
 
 
-                <p id="auth-message"
-                   class="auth-message"
-                   role="status"
-                   aria-live="polite">
-                </p>
+                <!-- ===================================== -->
+                <!-- AUTHENTICATION MESSAGES              -->
+                <!-- ===================================== -->
 
-                
-<div class="auth-bottom">
-    <p>
-        Forgot your password?
-        <a href="password.html">Reset it →</a>
-    </p>
+                <p
+                    id="auth-message"
+                    class="auth-message"
+                    role="status"
+                    aria-live="polite"
+                ></p>
 
-    <p>
-        New to EXEGIS?
-        <a href="register.html">
-            Create an account →
-        </a>
-    </p>
-</div>
 
+                <!-- ===================================== -->
+                <!-- PASSWORD RESET AND REGISTRATION      -->
+                <!-- ===================================== -->
+
+                <div class="auth-bottom">
+
+                    <p>
+                        Forgot your password?
+                        <a href="password.html">
+                            Reset it →
+                        </a>
+                    </p>
+
+                    <p>
+                        New to APORIA?
+                        <a href="register.html">
+                            Create an account →
+                        </a>
+                    </p>
+
+                </div>
 
             </section>
 
         </main>
 
 
-        <!-- FOOTER -->
+        <!-- ===================================== -->
+        <!-- FOOTER                               -->
+        <!-- ===================================== -->
 
         <footer class="site-footer">
 
-            <span>© EXEGIS</span>
+            <span>
+                © APORIA
+            </span>
 
             <span>
-                Discussions · Ideas · Culture
+                <a href="mailto:contact@aporia-journal.com">
+                    contact@aporia-journal.com
+                </a>
             </span>
 
             <a href="index.html">
@@ -180,4 +220,5 @@
     </div>
 
 </body>
+
 </html>
