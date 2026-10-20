@@ -82,7 +82,7 @@
         },
         {
             key: "analysis",
-            image: "images/Analysis.jpg"
+            image: "images/Analysis_2.jpg"
         },
         {
             key: "opinion",
