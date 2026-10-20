@@ -540,9 +540,81 @@
             data.body
         );
 
-        content.append(title, meta, body);
+        
+content.append(title, meta, body);
 
-        renderReplies();
+// Only the discussion's author sees Delete.
+if (
+    currentUser &&
+    currentUser.id === data.author_id
+) {
+    const deleteButton = element(
+        "button",
+        "forum-reply-action",
+        "Delete discussion"
+    );
+
+    deleteButton.type = "button";
+    deleteButton.style.marginTop = "8px";
+    deleteButton.style.marginBottom = "24px";
+
+    deleteButton.addEventListener(
+        "click",
+        async () => {
+
+            const confirmed = window.confirm(
+                "Permanently delete this discussion?\n\n" +
+                "The discussion and ALL its replies, " +
+                "including replies written by other members, " +
+                "will be deleted.\n\n" +
+                "This cannot be undone."
+            );
+
+            if (!confirmed) return;
+
+            deleteButton.disabled = true;
+            deleteButton.textContent = "Deleting...";
+
+            try {
+                const { data: deleted, error } =
+                    await client.rpc(
+                        "delete_own_discussion",
+                        {
+                            discussion_id: data.id
+                        }
+                    );
+
+                if (error) throw error;
+
+                if (deleted !== true) {
+                    throw new Error(
+                        "Unable to delete this discussion."
+                    );
+                }
+
+                // Return to the public forum.
+                returnToList();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            } catch (error) {
+                alert(errorMessage(error));
+
+                deleteButton.disabled = false;
+                deleteButton.textContent =
+                    "Delete discussion";
+            }
+        }
+    );
+
+    content.append(deleteButton);
+}
+
+renderReplies();
+
 
         window.scrollTo({
             top: 0,
