@@ -1,272 +1,472 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1">
 
-    <meta
-        name="description"
-        content="EXEGIS Discussions — A space to question ideas, exchange perspectives, and continue the conversation."
-    >
+    <meta name="description"
+          content="EXEGIS Discussions — An open forum for ideas, questions and conversations.">
 
     <title>Discussions — EXEGIS</title>
 
-    <!-- EXISTING EXEGIS STYLESHEET -->
     <link rel="stylesheet" href="css/style.css?v=3">
 
-    <!-- EXISTING SITE JAVASCRIPT -->
+    <style>
+        .forum {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 24px 90px;
+        }
+
+        .forum-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .forum-toolbar h2 {
+            margin: 0;
+            font-size: 23px;
+            font-weight: 500;
+        }
+
+        .forum-button {
+            display: inline-block;
+            background: #242424;
+            color: white;
+            border: 1px solid #242424;
+            padding: 13px 22px;
+            font: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .forum-button:hover {
+            background: #444;
+        }
+
+        .forum-button:disabled {
+            opacity: .5;
+            cursor: wait;
+        }
+
+        .forum-button-secondary {
+            background: transparent;
+            color: #242424;
+        }
+
+        .forum-button-secondary:hover {
+            background: #eee;
+        }
+
+        .forum-status {
+            margin: 22px 0;
+            color: #606060;
+            line-height: 1.6;
+        }
+
+        .forum-entry {
+            padding: 27px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .forum-entry-title {
+            display: block;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: inherit;
+            text-align: left;
+            font-family: Georgia, serif;
+            font-size: 25px;
+            line-height: 1.3;
+            cursor: pointer;
+        }
+
+        .forum-entry-title:hover {
+            text-decoration: underline;
+        }
+
+        .forum-meta {
+            margin: 10px 0;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .forum-excerpt {
+            color: #555;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .forum-compose {
+            margin: 28px 0;
+            padding: 25px;
+            border: 1px solid #d6d6d6;
+        }
+
+        .forum-compose h3 {
+            margin: 0 0 18px;
+            font-size: 21px;
+            font-weight: 500;
+        }
+
+        .forum-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .forum-form label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .forum-form input,
+        .forum-form textarea {
+            width: 100%;
+            padding: 13px;
+            box-sizing: border-box;
+            background: white;
+            color: #242424;
+            border: 1px solid #bbb;
+            border-radius: 0;
+            font: inherit;
+        }
+
+        .forum-form textarea {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .forum-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .forum-thread-title {
+            margin: 20px 0 12px;
+            font-family: Georgia, serif;
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 500;
+        }
+
+        .forum-thread-body {
+            margin: 24px 0 38px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .forum-back {
+            border: none;
+            background: transparent;
+            padding: 0;
+            color: #555;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .forum-back:hover {
+            text-decoration: underline;
+        }
+
+        .forum-replies-heading {
+            padding: 22px 0;
+            border-top: 1px solid #bbb;
+            border-bottom: 1px solid #ddd;
+            font-size: 21px;
+            font-weight: 500;
+        }
+
+        .forum-reply {
+            margin-top: 20px;
+            padding: 14px 0 14px 20px;
+            border-left: 2px solid #ddd;
+        }
+
+        .forum-reply-body {
+            margin: 12px 0;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            line-height: 1.65;
+        }
+
+        .forum-reply-action {
+            border: 0;
+            padding: 0;
+            background: transparent;
+            color: #555;
+            font: inherit;
+            font-size: 13px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .forum-auth-prompt {
+            margin: 22px 0;
+            padding: 20px;
+            border: 1px solid #bbb;
+            line-height: 1.7;
+        }
+
+        .forum-auth-prompt a {
+            color: inherit;
+            text-decoration: underline;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .forum {
+                padding: 20px 18px 65px;
+            }
+
+            .forum-toolbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .forum-entry-title {
+                font-size: 22px;
+            }
+
+            .forum-compose {
+                padding: 18px;
+            }
+        }
+    </style>
+
     <script defer src="js/common.js"></script>
 
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+    </script>
+
+    <script defer src="js/supabase-config.js"></script>
+    <script defer src="js/discussions.js?v=1"></script>
 </head>
 
 <body id="top">
 
-    <div class="site">
+<div class="site">
 
-        <!-- ===================================== -->
-        <!-- HEADER                               -->
-        <!-- ===================================== -->
+    <header class="journal-header">
 
-        <header class="journal-header">
+        <div class="utility">
+            <span>RHETORIC</span>
+            <span>ESSAYS, IDEAS, CULTURE</span>
+        </div>
 
-            <div class="utility">
-                <span>RHETORIC</span>
-                <span>ESSAYS, IDEAS, CULTURE</span>
-            </div>
-
-            <div class="masthead">
-
-                <a href="index.html" class="wordmark">
-                    EXEGIS<span class="masthead-dot">.</span>
-                </a>
-
-                <div class="masthead-sub">
-                    A journal of thoughts, observations
-                    &amp; rhetoric study on the world
-                </div>
-
-            </div>
-
-            <!-- NAVIGATION -->
-
-            <div class="journal-menu-bar">
-
-                <details class="journal-main-menu">
-
-                    <summary class="journal-menu-button">
-                        <span>MENU</span>
-                        <span aria-hidden="true">☰</span>
-                    </summary>
-
-                    <nav
-                        id="main-nav"
-                        class="journal-menu-panel"
-                        aria-label="Main navigation"
-                    >
-
-                        <div class="menu-panel-heading">
-                            EXPLORE EXEGIS
-                        </div>
-
-                        <a href="index.html" data-nav="home">
-                            Front page
-                        </a>
-
-                        <a href="section.html?section=articles"
-                           data-nav="articles">
-                            Articles
-                        </a>
-
-                        <a href="section.html?section=analysis"
-                           data-nav="analysis">
-                            Analysis
-                        </a>
-
-                        <a href="section.html?section=opinion"
-                           data-nav="opinion">
-                            Opinion
-                        </a>
-
-                        <a href="section.html?section=videos"
-                           data-nav="videos">
-                            Videos
-                        </a>
-
-                        <a href="section.html?section=art"
-                           data-nav="art">
-                            Art
-                        </a>
-
-                        <a href="section.html?section=to-read"
-                           data-nav="to-read">
-                            Gift of the day
-                        </a>
-
-                        <div class="menu-panel-divider"></div>
-
-                        <a href="discussions.html"
-                           data-nav="discussions"
-                           aria-current="page">
-                            Discussions
-                        </a>
-
-                        <div class="menu-panel-divider"></div>
-
-                        <a href="section.html?section=archives"
-                           data-nav="archives">
-                            All publications
-                        </a>
-
-                        <a href="about.html" data-nav="about">
-                            About
-                        </a>
-
-                        <div class="menu-panel-divider"></div>
-
-                        <div class="menu-panel-heading">
-                            MEMBERS
-                        </div>
-
-                        <a href="register.html"
-                           data-nav="register">
-                            Create an account
-                        </a>
-
-                        <a href="login.html"
-                           data-nav="login">
-                            Sign in
-                        </a>
-
-                    </nav>
-
-                </details>
-
-            </div>
-
-        </header>
-
-
-        <!-- ===================================== -->
-        <!-- DISCUSSIONS                          -->
-        <!-- ===================================== -->
-
-        <main>
-
-            <!-- INTRODUCTION -->
-
-            <section class="section-hero">
-
-                <p class="eyebrow">
-                    EXEGIS / THE COMMUNITY
-                </p>
-
-                <h1>Discussions</h1>
-
-                <p class="intro-copy">
-                    A space for ideas that deserve more
-                    than a passing thought. Question,
-                    challenge, reflect, and exchange
-                    perspectives with others.
-                </p>
-
-            </section>
-
-
-            <!-- DISCUSSION CONTENT -->
-
-            <section class="archive">
-
-                <div class="archive-top">
-
-                    <h2>
-                        Conversations
-                    </h2>
-
-                    <span class="archive-hint">
-                        EXEGIS COMMUNITY
-                    </span>
-
-                </div>
-
-
-                <!-- INTRODUCTORY MESSAGE -->
-
-                <div class="discussion-introduction">
-
-                    <p class="eyebrow">
-                        AN OPEN CONVERSATION
-                    </p>
-
-                    <h2>
-                        Beyond the page.
-                    </h2>
-
-                    <p>
-                        A journal may begin with the thoughts
-                        of one person, but an idea becomes
-                        more interesting when others
-                        enter the conversation.
-                    </p>
-
-                    <p>
-                        Discussions will be a place to
-                        respond to publications, explore
-                        questions of your own, and engage
-                        with perspectives different
-                        from yours.
-                    </p>
-
-                    <p>
-                        The discussion forum is being
-                        prepared. In the meantime, you can
-                        create an account and become
-                        part of EXEGIS.
-                    </p>
-
-                    <p>
-                        <a href="register.html">
-                            Create an account ↗
-                        </a>
-                    </p>
-
-                    <p>
-                        Already a member?
-                        <a href="login.html">
-                            Sign in →
-                        </a>
-                    </p>
-
-                </div>
-
-            </section>
-
-        </main>
-
-
-        <!-- ===================================== -->
-        <!-- FOOTER                               -->
-        <!-- ===================================== -->
-
-        <footer class="site-footer">
-
-            <span>
-                © <span data-year></span> EXEGIS
-            </span>
-
-            <span>
-                A personal journal of ideas and culture.
-            </span>
-
-            <a href="#top">
-                Back to top ↑
+        <div class="masthead">
+            <a href="index.html" class="wordmark">
+                EXEGIS<span class="masthead-dot">.</span>
             </a>
 
-        </footer>
+            <div class="masthead-sub">
+                A journal of thoughts, observations
+                &amp; rhetoric study on the world
+            </div>
+        </div>
 
-    </div>
+        <div class="journal-menu-bar">
+
+            <details class="journal-main-menu">
+
+                <summary class="journal-menu-button">
+                    <span>MENU</span>
+                    <span aria-hidden="true">☰</span>
+                </summary>
+
+                <nav id="main-nav"
+                     class="journal-menu-panel"
+                     aria-label="Main navigation">
+
+                    <div class="menu-panel-heading">
+                        EXPLORE EXEGIS
+                    </div>
+
+                    <a href="index.html" data-nav="home">
+                        Front page
+                    </a>
+
+                    <a href="section.html?section=articles"
+                       data-nav="articles">
+                        Articles
+                    </a>
+
+                    <a href="section.html?section=analysis"
+                       data-nav="analysis">
+                        Analysis
+                    </a>
+
+                    <a href="section.html?section=opinion"
+                       data-nav="opinion">
+                        Opinion
+                    </a>
+
+                    <a href="section.html?section=videos"
+                       data-nav="videos">
+                        Videos
+                    </a>
+
+                    <a href="section.html?section=art"
+                       data-nav="art">
+                        Art
+                    </a>
+
+                    <a href="section.html?section=to-read"
+                       data-nav="to-read">
+                        Gift of the day
+                    </a>
+
+                    <div class="menu-panel-divider"></div>
+
+                    <a href="discussions.html"
+                       data-nav="discussions"
+                       aria-current="page">
+                        Discussions
+                    </a>
+
+                    <div class="menu-panel-divider"></div>
+
+                    <a href="section.html?section=archives"
+                       data-nav="archives">
+                        All publications
+                    </a>
+
+                    <a href="about.html" data-nav="about">
+                        About
+                    </a>
+
+                    <div class="menu-panel-divider"></div>
+
+                    <div class="menu-panel-heading">
+                        MEMBERS
+                    </div>
+
+                    <a href="register.html"
+                       id="forum-register-link">
+                        Create an account
+                    </a>
+
+                    <a href="login.html"
+                       id="forum-account-link">
+                        Sign in
+                    </a>
+
+                </nav>
+
+            </details>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <section class="section-hero">
+
+            <p class="eyebrow">
+                EXEGIS / THE COMMUNITY
+            </p>
+
+            <h1>Discussions</h1>
+
+            <p class="intro-copy">
+                An open space for ideas and conversations.
+                Explore questions, exchange perspectives,
+                and continue the discussion beyond the page.
+            </p>
+
+        </section>
+
+        <section class="forum">
+
+            <div id="forum-list-view">
+
+                <div class="forum-toolbar">
+
+                    <h2>Conversations</h2>
+
+                    <button class="forum-button"
+                            id="forum-new-button"
+                            type="button">
+                        Start a discussion
+                    </button>
+
+                </div>
+
+                <div id="forum-new-container"></div>
+
+                <p id="forum-list-status"
+                   class="forum-status"
+                   role="status">
+                    Loading discussions...
+                </p>
+
+                <div id="forum-list"></div>
+
+            </div>
+
+            <div id="forum-thread-view" hidden>
+
+                <button class="forum-back"
+                        id="forum-back-button"
+                        type="button">
+                    ← All discussions
+                </button>
+
+                <div id="forum-thread-content"></div>
+
+                <h2 class="forum-replies-heading">
+                    Replies
+                </h2>
+
+                <div id="forum-replies"></div>
+
+                <div id="forum-reply-container"></div>
+
+                <div style="margin-top:25px">
+                    <button class="forum-button"
+                            id="forum-reply-button"
+                            type="button">
+                        Write a reply
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+
+        <span>
+            © <span data-year></span> EXEGIS
+        </span>
+
+        <span>
+            A personal journal of ideas and culture.
+        </span>
+
+        <a href="#top">Back to top ↑</a>
+
+    </footer>
+
+</div>
 
 </body>
 </html>
