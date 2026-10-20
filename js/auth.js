@@ -6,6 +6,15 @@
     const registerForm = document.getElementById(
         "register-form"
     );
+    
+function showMessage(message, isError = false) {
+    const messageElement = document.getElementById("auth-message");
+
+    if (!messageElement) return;
+
+    messageElement.textContent = message;
+    messageElement.style.color = isError ? "#a33b32" : "#285d49";
+}
 
     registerForm?.addEventListener(
         "submit",
