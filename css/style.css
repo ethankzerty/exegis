@@ -329,3 +329,15 @@
         height: 170px;
     }
 }
+/* Category image above the title */
+
+.section-hero .category-banner {
+    margin-top: 0;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 700px) {
+    .section-hero .category-banner {
+        margin-bottom: 24px;
+    }
+}
