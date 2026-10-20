@@ -559,7 +559,7 @@
             .from("replies")
             .select(
                 "id, discussion_id, author_id, " +
-                "parent_reply_id, body, created_at"
+                "parent_reply_id, body, created_at, deleted_at"
             )
             .eq("discussion_id", discussionId)
             .order("created_at", { ascending: true })
@@ -644,10 +644,17 @@
                 );
 
                 const body = element(
-                    "p",
-                    "forum-reply-body",
-                    reply.body
-                );
+    "p",
+    "forum-reply-body",
+    reply.deleted_at
+        ? "This comment has been deleted."
+        : reply.body
+);
+
+if (reply.deleted_at) {
+    body.style.fontStyle = "italic";
+    body.style.color = "#888";
+}
 
                 const action = element(
                     "button",
@@ -664,7 +671,69 @@
                     }
                 );
 
-                node.append(meta, body, action);
+                node.append(meta, body);
+
+if (!reply.deleted_at) {
+    node.append(action);
+
+    if (
+        currentUser &&
+        currentUser.id === reply.author_id
+    ) {
+        const deleteButton = element(
+            "button",
+            "forum-reply-action",
+            "Delete"
+        );
+
+        deleteButton.type = "button";
+        deleteButton.style.marginLeft = "18px";
+
+        deleteButton.addEventListener(
+            "click",
+            async () => {
+
+                const confirmed = window.confirm(
+                    "Delete this comment? " +
+                    "This cannot be undone."
+                );
+
+                if (!confirmed) return;
+
+                deleteButton.disabled = true;
+                deleteButton.textContent = "Deleting...";
+
+                try {
+                    const { data, error } =
+                        await client.rpc(
+                            "delete_own_reply",
+                            { reply_id: reply.id }
+                        );
+
+                    if (error) throw error;
+
+                    if (data !== true) {
+                        throw new Error(
+                            "Unable to delete this comment."
+                        );
+                    }
+
+                    await loadReplies(currentDiscussion.id);
+                    await loadAuthorNames(currentReplies);
+                    renderReplies();
+
+                } catch (error) {
+                    alert(errorMessage(error));
+
+                    deleteButton.disabled = false;
+                    deleteButton.textContent = "Delete";
+                }
+            }
+        );
+
+        node.append(deleteButton);
+    }
+}
                 target.append(node);
 
                 appendChildren(reply.id, node, depth + 1);
