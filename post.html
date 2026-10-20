@@ -8,15 +8,20 @@
 
     <meta
         name="description"
-        content="EXEGIS — Essays, analysis, opinions, art and ideas."
+        content="APORIA — Essays, analysis, opinions, art and ideas."
     >
 
-    <title>Publication — EXEGIS</title>
+    <title>Publication — APORIA</title>
 
     <!-- STYLESHEET -->
     <link rel="stylesheet" href="css/style.css">
 
     <!-- JAVASCRIPT -->
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"
+    ></script>
+    <script defer src="js/supabase-config.js"></script>
     <script defer src="js/common.js"></script>
     <script defer src="js/content.js"></script>
     <script defer src="js/post.js"></script>
@@ -43,7 +48,7 @@
             <div class="masthead">
 
                 <a href="index.html" class="wordmark">
-                    EXEGIS<span class="masthead-dot">.</span>
+                    APORIA<span class="masthead-dot">.</span>
                 </a>
 
                 <div class="masthead-sub">
@@ -73,8 +78,16 @@
                         aria-label="Main navigation"
                     >
 
+                        <!--
+                            Shared navigation is populated
+                            automatically by js/common.js.
+
+                            Administrator links are added
+                            only after authorization.
+                        -->
+
                         <div class="menu-panel-heading">
-                            EXPLORE EXEGIS
+                            EXPLORE APORIA
                         </div>
 
                         <a href="index.html" data-nav="home">
@@ -113,13 +126,36 @@
 
                         <div class="menu-panel-divider"></div>
 
+                        <a href="discussions.html"
+                           data-nav="discussions">
+                            Discussions
+                        </a>
+
+                        <div class="menu-panel-divider"></div>
+
                         <a href="section.html?section=archives"
                            data-nav="archives">
-                            Archives
+                            All publications
                         </a>
 
                         <a href="about.html" data-nav="about">
                             About
+                        </a>
+
+                        <div class="menu-panel-divider"></div>
+
+                        <div class="menu-panel-heading">
+                            MEMBERS
+                        </div>
+
+                        <a href="register.html"
+                           data-nav="register">
+                            Create an account
+                        </a>
+
+                        <a href="login.html"
+                           data-nav="login">
+                            Sign in
                         </a>
 
                     </nav>
@@ -152,9 +188,9 @@
                 <!-- PUBLICATION CONTENT -->
 
                 <!--
-                    The title, date, category, images
-                    and full article are inserted
-                    automatically by js/post.js
+                    The publication's title, date,
+                    category, images, video and text
+                    are inserted by js/post.js.
                 -->
 
                 <article id="post"></article>
@@ -171,11 +207,13 @@
         <footer class="site-footer">
 
             <span>
-                © <span data-year></span> EXEGIS
+                © <span data-year></span> APORIA
             </span>
 
             <span>
-                A personal journal of ideas and culture.
+                <a href="mailto:contact@aporia-journal.com">
+                    contact@aporia-journal.com
+                </a>
             </span>
 
             <a href="#top">
