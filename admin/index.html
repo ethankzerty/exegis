@@ -3,462 +3,630 @@
 <html lang="en">
 
 <head>
-<!-- SUPABASE AUTHENTICATION LIBRARY -->
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script defer src="../js/supabase-config.js"></script>
-
-
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Editor — EXEGIS</title>
-<meta name="robots" content="noindex, nofollow">
-
-<style>
-/* =====================================
-   EXEGIS — EDITOR PROTOTYPE
-   ===================================== */
-
-:root {
-    --paper: #f7f6f2;
-    --white: #fff;
-    --ink: #242321;
-    --muted: #77736c;
-    --line: #dcd9d2;
-    --accent: #665443;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-[hidden] {
-    display: none !important;
-}
-
-body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-a {
-    color: inherit;
-}
-
-button,
-input,
-select,
-textarea {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-.editor-shell {
-    max-width: 1160px;
-    margin: 0 auto;
-    padding: 0 30px 80px;
-}
-
-/* HEADER */
-
-.editor-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 26px 0;
-    border-bottom: 1px solid var(--ink);
-}
-
-.editor-logo {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 31px;
-    letter-spacing: -1.5px;
-    text-decoration: none;
-}
-
-.editor-logo span {
-    color: #9b7451;
-}
-
-.editor-top-right {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    font-size: 12px;
-}
-
-.prototype-tag {
-    color: var(--muted);
-    letter-spacing: 1px;
-    font-size: 10px;
-    text-transform: uppercase;
-}
-
-/* INTRO */
-
-.editor-intro {
-    padding: 45px 0 32px;
-}
-
-.kicker {
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-}
-
-.editor-intro h1 {
-    margin: 10px 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(38px, 5vw, 58px);
-    font-weight: normal;
-    letter-spacing: -1.8px;
-    line-height: 1.15;
-}
-
-.editor-intro p {
-    color: var(--muted);
-    max-width: 590px;
-}
-
-/* TWO-COLUMN WORKSPACE */
-
-.editor-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(290px, 1fr);
-    align-items: start;
-    gap: 26px;
-}
-
-.editor-panel,
-.preview-panel {
-    background: var(--white);
-    border: 1px solid var(--line);
-    padding: 29px;
-}
-
-.panel-title {
-    margin: 0 0 24px;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 24px;
-    font-weight: normal;
-}
-
-/* FORM */
-
-.field {
-    margin-bottom: 24px;
-}
-
-.field label {
-    display: block;
-    margin-bottom: 9px;
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 0.3px;
-}
-
-.field-note {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.field input,
-.field textarea,
-.field select {
-    display: block;
-    width: 100%;
-    padding: 13px 14px;
-    background: #fff;
-    border: 1px solid #cbc7bf;
-    border-radius: 0;
-    color: var(--ink);
-    outline-offset: 3px;
-}
-
-.field textarea {
-    resize: vertical;
-    min-height: 105px;
-    line-height: 1.75;
-}
-
-.field textarea.long-body {
-    min-height: 320px;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 16px;
-}
-
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-    border-color: #665443;
-}
-
-.field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.section-divider {
-    border: 0;
-    border-top: 1px solid var(--line);
-    margin: 31px 0;
-}
-
-/* GIFTS */
-
-.gift-selector {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-
-.gift-selector button {
-    padding: 13px 5px;
-    border: 1px solid var(--line);
-    background: var(--white);
-}
-
-.gift-selector button[data-kind="song"].active {
-    background: #eae2d3;
-    border-color: #795536;
-}
-
-.gift-selector button[data-kind="painting"].active {
-    background: #dce6de;
-    border-color: #41614b;
-}
-
-.gift-selector button[data-kind="movie"].active {
-    background: #e2dde8;
-    border-color: #604b75;
-}
-
-/* ACTIONS */
-
-.editor-actions {
-    border-top: 1px solid var(--line);
-    padding-top: 23px;
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.action {
-    padding: 12px 20px;
-    border: 1px solid var(--ink);
-    background: var(--white);
-    color: var(--ink);
-}
-
-.action.primary {
-    color: #fff;
-    background: var(--ink);
-}
-
-.action:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-}
-
-.action-note {
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--muted);
-}
-
-/* PREVIEW */
-
-.preview-panel {
-    position: sticky;
-    top: 20px;
-}
-
-.preview-label {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-}
-
-.preview-category {
-    margin-top: 27px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--accent);
-}
-
-.preview-panel h2 {
-    margin: 12px 0;
-    font: normal 34px/1.18 Georgia, "Times New Roman", serif;
-    overflow-wrap: anywhere;
-}
-
-.preview-summary {
-    color: #67635e;
-    font: italic 17px/1.6 Georgia, "Times New Roman", serif;
-    overflow-wrap: anywhere;
-}
-
-.preview-image {
-    display: block;
-    width: 100%;
-    max-height: 280px;
-    object-fit: cover;
-    margin: 23px 0;
-}
-
-.preview-body {
-    margin-top: 25px;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    font: 16px/1.85 Georgia, "Times New Roman", serif;
-}
-
-.preview-gift-tag {
-    display: inline-block;
-    margin-top: 18px;
-    padding: 6px 11px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.preview-gift-tag.song {
-    background: #eae2d3;
-    color: #795536;
-}
-
-.preview-gift-tag.painting {
-    background: #dce6de;
-    color: #41614b;
-}
-
-.preview-gift-tag.movie {
-    background: #e2dde8;
-    color: #604b75;
-}
-
-.preview-meta {
-    padding-top: 18px;
-    margin-top: 27px;
-    border-top: 1px solid var(--line);
-    font-size: 12px;
-    color: var(--muted);
-}
-
-@media (max-width: 850px) {
-    .editor-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .preview-panel {
-        position: static;
-    }
-}
-
-@media (max-width: 520px) {
-    .editor-shell {
-        padding: 0 15px 50px;
-    }
-
-    .editor-panel,
-    .preview-panel {
-        padding: 20px;
-    }
-
-    .field-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .editor-top-right {
-        gap: 10px;
-    }
-}
-
-
-/* Rich text editor: same restrained EXEGIS typography */
-.rich-toolbar { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px; background: #f7f6f2; border: 1px solid #cbc7bf; border-bottom: 0; }
-.rich-toolbar button { min-width: 34px; padding: 5px 9px; border: 1px solid #dcd9d2; background: white; color: #242321; font-size: 12px; }
-.rich-toolbar button:hover, .rich-toolbar button:focus-visible { background: #eae5db; }
-.rich-editor { min-height: 320px; padding: 16px; border: 1px solid #cbc7bf; background: white; outline-offset: 3px; font: 16px/1.85 Georgia, "Times New Roman", serif; overflow-wrap: anywhere; }
-.rich-editor.short-body { min-height: 130px; }
-.rich-editor:empty::before { content: attr(data-placeholder); color: #948d85; pointer-events: none; }
-.rich-editor h2, .preview-body h2 { font: normal 27px/1.35 Georgia,serif; margin: 1.1em 0 .5em; }
-.rich-editor h3, .preview-body h3 { font: normal 21px/1.35 Georgia,serif; margin: 1em 0 .5em; }
-.rich-editor blockquote, .preview-body blockquote { margin: 1.2em 0; padding-left: 17px; border-left: 2px solid #9b7451; color: #67635e; font-style: italic; }
-.rich-editor img, .preview-body img { max-width: 100%; height: auto; display: block; margin: 18px auto; }
-.rich-editor p, .preview-body p { margin: 0 0 1em; }
-.preview-body { white-space: normal; }
-
-/* The [hidden] attribute controls all private content visibility. */
-
-/* Saved draft list */
-.draft-library { margin-top: 28px; background: var(--white); border: 1px solid var(--line); padding: 27px; }
-.draft-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
-.draft-toolbar h2 { font: normal 25px Georgia, serif; margin: 0; }
-.draft-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
-.draft-item strong { display: block; font: normal 18px Georgia, serif; overflow-wrap: anywhere; }
-.draft-item small { color: var(--muted); }
-.draft-item button { flex-shrink: 0; }
-#draft-message { min-height: 20px; }
-#draft-message.error { color: #a43535; }
-#draft-message.success { color: #326345; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Editor — APORIA</title>
+
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- SUPABASE AUTHENTICATION LIBRARY -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script defer src="../js/supabase-config.js"></script>
+
+    <style>
+
+        /* =====================================
+           APORIA — PUBLICATION EDITOR
+           ===================================== */
+
+        :root {
+            --paper: #f7f6f2;
+            --white: #fff;
+            --ink: #242321;
+            --muted: #77736c;
+            --line: #dcd9d2;
+            --accent: #665443;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .editor-shell {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 0 30px 80px;
+        }
+
+        /* HEADER */
+
+        .editor-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 26px 0;
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .editor-logo {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 31px;
+            letter-spacing: -1.5px;
+            text-decoration: none;
+        }
+
+        .editor-logo span {
+            color: #9b7451;
+        }
+
+        .editor-top-right {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            font-size: 12px;
+        }
+
+        .prototype-tag {
+            color: var(--muted);
+            letter-spacing: 1px;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        /* INTRODUCTION */
+
+        .editor-intro {
+            padding: 45px 0 32px;
+        }
+
+        .kicker {
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .editor-intro h1 {
+            margin: 10px 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(38px, 5vw, 58px);
+            font-weight: normal;
+            letter-spacing: -1.8px;
+            line-height: 1.15;
+        }
+
+        .editor-intro p {
+            color: var(--muted);
+            max-width: 590px;
+        }
+
+        /* TWO-COLUMN WORKSPACE */
+
+        .editor-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(290px, 1fr);
+            align-items: start;
+            gap: 26px;
+        }
+
+        .editor-panel,
+        .preview-panel {
+            background: var(--white);
+            border: 1px solid var(--line);
+            padding: 29px;
+        }
+
+        .panel-title {
+            margin: 0 0 24px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 24px;
+            font-weight: normal;
+        }
+
+        /* FORM */
+
+        .field {
+            margin-bottom: 24px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
+        .field-note {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            display: block;
+            width: 100%;
+            padding: 13px 14px;
+            background: #fff;
+            border: 1px solid #cbc7bf;
+            border-radius: 0;
+            color: var(--ink);
+            outline-offset: 3px;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 105px;
+            line-height: 1.75;
+        }
+
+        .field textarea.long-body {
+            min-height: 320px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 16px;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: #665443;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .section-divider {
+            border: 0;
+            border-top: 1px solid var(--line);
+            margin: 31px 0;
+        }
+
+        /* GIFT SELECTOR */
+
+        .gift-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .gift-selector button {
+            padding: 13px 5px;
+            border: 1px solid var(--line);
+            background: var(--white);
+        }
+
+        .gift-selector button[data-kind="song"].active {
+            background: #eae2d3;
+            border-color: #795536;
+        }
+
+        .gift-selector button[data-kind="painting"].active {
+            background: #dce6de;
+            border-color: #41614b;
+        }
+
+        .gift-selector button[data-kind="movie"].active {
+            background: #e2dde8;
+            border-color: #604b75;
+        }
+
+        /* ACTIONS */
+
+        .editor-actions {
+            border-top: 1px solid var(--line);
+            padding-top: 23px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action {
+            padding: 12px 20px;
+            border: 1px solid var(--ink);
+            background: var(--white);
+            color: var(--ink);
+        }
+
+        .action.primary {
+            color: #fff;
+            background: var(--ink);
+        }
+
+        .action:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .action-note {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* LIVE PREVIEW */
+
+        .preview-panel {
+            position: sticky;
+            top: 20px;
+        }
+
+        .preview-label {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .preview-category {
+            margin-top: 27px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .preview-panel h2 {
+            margin: 12px 0;
+            font: normal 34px/1.18 Georgia, "Times New Roman", serif;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-summary {
+            color: #67635e;
+            font: italic 17px/1.6 Georgia, "Times New Roman", serif;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-image {
+            display: block;
+            width: 100%;
+            max-height: 280px;
+            object-fit: cover;
+            margin: 23px 0;
+        }
+
+        .preview-body {
+            margin-top: 25px;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            font: 16px/1.85 Georgia, "Times New Roman", serif;
+        }
+
+        .preview-gift-tag {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 6px 11px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .preview-gift-tag.song {
+            background: #eae2d3;
+            color: #795536;
+        }
+
+        .preview-gift-tag.painting {
+            background: #dce6de;
+            color: #41614b;
+        }
+
+        .preview-gift-tag.movie {
+            background: #e2dde8;
+            color: #604b75;
+        }
+
+        .preview-meta {
+            padding-top: 18px;
+            margin-top: 27px;
+            border-top: 1px solid var(--line);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* RICH TEXT EDITOR */
+
+        .rich-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 9px;
+            background: #f7f6f2;
+            border: 1px solid #cbc7bf;
+            border-bottom: 0;
+        }
+
+        .rich-toolbar button {
+            min-width: 34px;
+            padding: 5px 9px;
+            border: 1px solid #dcd9d2;
+            background: white;
+            color: #242321;
+            font-size: 12px;
+        }
+
+        .rich-toolbar button:hover,
+        .rich-toolbar button:focus-visible {
+            background: #eae5db;
+        }
+
+        .rich-editor {
+            min-height: 320px;
+            padding: 16px;
+            border: 1px solid #cbc7bf;
+            background: white;
+            outline-offset: 3px;
+            font: 16px/1.85 Georgia, "Times New Roman", serif;
+            overflow-wrap: anywhere;
+        }
+
+        .rich-editor.short-body {
+            min-height: 130px;
+        }
+
+        .rich-editor:empty::before {
+            content: attr(data-placeholder);
+            color: #948d85;
+            pointer-events: none;
+        }
+
+        .rich-editor h2,
+        .preview-body h2 {
+            font: normal 27px/1.35 Georgia, serif;
+            margin: 1.1em 0 .5em;
+        }
+
+        .rich-editor h3,
+        .preview-body h3 {
+            font: normal 21px/1.35 Georgia, serif;
+            margin: 1em 0 .5em;
+        }
+
+        .rich-editor blockquote,
+        .preview-body blockquote {
+            margin: 1.2em 0;
+            padding-left: 17px;
+            border-left: 2px solid #9b7451;
+            color: #67635e;
+            font-style: italic;
+        }
+
+        .rich-editor img,
+        .preview-body img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 18px auto;
+        }
+
+        .rich-editor p,
+        .preview-body p {
+            margin: 0 0 1em;
+        }
+
+        /* SAVED DRAFTS */
+
+        .draft-library {
+            margin-top: 28px;
+            background: var(--white);
+            border: 1px solid var(--line);
+            padding: 27px;
+        }
+
+        .draft-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .draft-toolbar h2 {
+            font: normal 25px Georgia, serif;
+            margin: 0;
+        }
+
+        .draft-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .draft-item strong {
+            display: block;
+            font: normal 18px Georgia, serif;
+            overflow-wrap: anywhere;
+        }
+
+        .draft-item small {
+            color: var(--muted);
+        }
+
+        .draft-item button {
+            flex-shrink: 0;
+        }
+
+        #draft-message {
+            min-height: 20px;
+        }
+
+        #draft-message.error {
+            color: #a43535;
+        }
+
+        #draft-message.success {
+            color: #326345;
+        }
+
+        @media (max-width: 850px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .editor-shell {
+                padding: 0 15px 50px;
+            }
+
+            .editor-panel,
+            .preview-panel {
+                padding: 20px;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .editor-top-right {
+                gap: 10px;
+            }
+        }
+
+    </style>
+
 </head>
 
 <body>
 
 <div class="editor-shell">
 
-    <!-- HEADER -->
+    <!-- ===================================== -->
+    <!-- HEADER                               -->
+    <!-- ===================================== -->
 
     <header class="editor-top">
+
         <a class="editor-logo" href="../index.html">
-            EXEGIS<span>.</span>
+            APORIA<span>.</span>
         </a>
 
         <div class="editor-top-right">
-            <span class="prototype-tag">Editor prototype</span>
+            <span class="prototype-tag">Publication editor</span>
             <a href="../index.html">View journal ↗</a>
-            <button type="button" id="admin-logout" class="action" hidden>Sign out</button>
+
+            <button
+                type="button"
+                id="admin-logout"
+                class="action"
+                hidden
+            >
+                Sign out
+            </button>
         </div>
+
     </header>
 
 
-    <!-- LOGIN IS VISIBLE UNTIL SERVER AUTHORIZATION SUCCEEDS -->
-    <section id="admin-login" class="editor-panel" style="max-width:450px;margin:65px auto;">
-        <div class="kicker">EXEGIS / ADMINISTRATION</div>
-        <h1 style="font:normal 36px Georgia,serif;margin:12px 0;">Administrator access</h1>
-        <p style="color:var(--muted);">Sign in to manage EXEGIS publications.</p>
+    <!-- ===================================== -->
+    <!-- ADMINISTRATOR LOGIN                  -->
+    <!-- ===================================== -->
+
+    <section
+        id="admin-login"
+        class="editor-panel"
+        style="max-width:450px;margin:65px auto;"
+    >
+
+        <div class="kicker">APORIA / ADMINISTRATION</div>
+
+        <h1 style="font:normal 36px Georgia,serif;margin:12px 0;">
+            Administrator access
+        </h1>
+
+        <p style="color:var(--muted);">
+            Sign in to manage APORIA publications.
+        </p>
+
         <form id="admin-login-form">
-            <div class="field"><label for="admin-email">Email address</label>
-                <input id="admin-email" type="email" autocomplete="username" required></div>
-            <div class="field"><label for="admin-password">Password</label>
-                <input id="admin-password" type="password" autocomplete="current-password" required></div>
-            <button class="action primary" type="submit">Sign in</button>
+
+            <div class="field">
+                <label for="admin-email">Email address</label>
+                <input
+                    id="admin-email"
+                    type="email"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="admin-password">Password</label>
+                <input
+                    id="admin-password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button class="action primary" type="submit">
+                Sign in
+            </button>
+
         </form>
-        <p id="admin-status" role="status" aria-live="polite"></p>
+
+        <p
+            id="admin-status"
+            role="status"
+            aria-live="polite"
+        ></p>
+
     </section>
 
-    <!-- INTRODUCTION -->
+
+    <!-- ===================================== -->
+    <!-- EDITOR INTRODUCTION                  -->
+    <!-- ===================================== -->
 
     <section class="editor-intro" id="editor-intro" hidden>
-        <div class="kicker">EXEGIS / PUBLISHING</div>
+
+        <div class="kicker">APORIA / PUBLISHING</div>
 
         <h1>The Editor</h1>
 
@@ -466,9 +634,13 @@ button {
             A space to compose new publications.
             Choose your format and begin writing.
         </p>
+
     </section>
 
-    <!-- WORKSPACE -->
+
+    <!-- ===================================== -->
+    <!-- EDITOR WORKSPACE                     -->
+    <!-- ===================================== -->
 
     <div class="editor-layout" id="editor-layout" hidden>
 
@@ -476,9 +648,11 @@ button {
 
             <h2 class="panel-title">New publication</h2>
 
-            <!-- PUBLICATION TYPE -->
+
+            <!-- PUBLICATION CATEGORY -->
 
             <div class="field">
+
                 <label for="publication-type">
                     Publication category
                 </label>
@@ -491,37 +665,47 @@ button {
                     <option value="video">Video</option>
                     <option value="to-read">Gift of the Day</option>
                 </select>
+
             </div>
+
 
             <!-- GIFT CATEGORY -->
 
             <section id="gift-fields" hidden>
+
                 <div class="field">
+
                     <label>Gift category</label>
 
                     <div class="gift-selector">
-                        <button type="button"
-                                data-kind="song"
-                                class="active">
+
+                        <button
+                            type="button"
+                            data-kind="song"
+                            class="active"
+                        >
                             ♪ Song
                         </button>
 
-                        <button type="button"
-                                data-kind="painting">
+                        <button type="button" data-kind="painting">
                             ◇ Painting
                         </button>
 
-                        <button type="button"
-                                data-kind="movie">
+                        <button type="button" data-kind="movie">
                             ▷ Movie
                         </button>
+
                     </div>
+
                 </div>
+
             </section>
+
 
             <!-- TITLE -->
 
             <div class="field">
+
                 <label for="publication-title" id="title-label">
                     Publication title
                 </label>
@@ -531,11 +715,14 @@ button {
                     type="text"
                     placeholder="The title of your next publication"
                 >
+
             </div>
 
-            <!-- GIFT CREATOR -->
+
+            <!-- CREATOR -->
 
             <div class="field" id="creator-field" hidden>
+
                 <label for="creator" id="creator-label">
                     Creator
                 </label>
@@ -545,11 +732,14 @@ button {
                     type="text"
                     placeholder="Name of the creator"
                 >
+
             </div>
+
 
             <!-- SUMMARY -->
 
             <div class="field" id="summary-field">
+
                 <label for="publication-summary">
                     Introduction / summary
                 </label>
@@ -564,47 +754,99 @@ button {
                     This will also appear on the journal's
                     publication cards.
                 </p>
+
             </div>
 
-            <!-- ARTICLE BODY -->
+
+            <!-- RICH TEXT BODY -->
 
             <div class="field">
+
                 <label for="publication-body" id="body-label">
                     Article body
                 </label>
 
-                <div class="rich-toolbar" id="rich-toolbar" aria-label="Text formatting">
-                    <button type="button" data-command="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
-                    <button type="button" data-command="italic" title="Italic (Ctrl+I)"><em>I</em></button>
-                    <button type="button" data-block="h2" title="Heading">H2</button>
-                    <button type="button" data-block="h3" title="Subheading">H3</button>
-                    <button type="button" data-block="p" title="Paragraph">¶</button>
-                    <button type="button" data-block="blockquote" title="Quotation">❝</button>
-                    <button type="button" data-command="insertUnorderedList" title="Bulleted list">• List</button>
-                    <button type="button" data-command="insertOrderedList" title="Numbered list">1. List</button>
-                    <button type="button" id="rich-link" title="Insert a hyperlink">Link</button>
-                    <button type="button" id="rich-image" title="Insert an image from a URL">Image</button>
-                    <button type="button" data-command="removeFormat" title="Clear formatting">Clear</button>
+                <div
+                    class="rich-toolbar"
+                    id="rich-toolbar"
+                    aria-label="Text formatting"
+                >
+
+                    <button type="button" data-command="bold" title="Bold (Ctrl+B)">
+                        <strong>B</strong>
+                    </button>
+
+                    <button type="button" data-command="italic" title="Italic (Ctrl+I)">
+                        <em>I</em>
+                    </button>
+
+                    <button type="button" data-block="h2" title="Heading">
+                        H2
+                    </button>
+
+                    <button type="button" data-block="h3" title="Subheading">
+                        H3
+                    </button>
+
+                    <button type="button" data-block="p" title="Paragraph">
+                        ¶
+                    </button>
+
+                    <button type="button" data-block="blockquote" title="Quotation">
+                        ❝
+                    </button>
+
+                    <button type="button" data-command="insertUnorderedList" title="Bulleted list">
+                        • List
+                    </button>
+
+                    <button type="button" data-command="insertOrderedList" title="Numbered list">
+                        1. List
+                    </button>
+
+                    <button type="button" id="rich-link" title="Insert a hyperlink">
+                        Link
+                    </button>
+
+                    <button type="button" id="rich-image" title="Insert an image from a URL">
+                        Image
+                    </button>
+
+                    <button type="button" data-command="removeFormat" title="Clear formatting">
+                        Clear
+                    </button>
+
                 </div>
-                <div id="publication-body" class="rich-editor" contenteditable="true"
-                    role="textbox" aria-multiline="true" aria-label="Article body"
-                    data-placeholder="Begin writing..."></div>
+
+                <div
+                    id="publication-body"
+                    class="rich-editor"
+                    contenteditable="true"
+                    role="textbox"
+                    aria-multiline="true"
+                    aria-label="Article body"
+                    data-placeholder="Begin writing..."
+                ></div>
 
                 <p class="field-note" id="body-note">
-                    Format your writing with the toolbar. Save draft to preserve formatting.
+                    Format your writing with the toolbar.
+                    Save draft to preserve formatting.
                 </p>
+
             </div>
+
 
             <hr class="section-divider">
 
-            <!-- MEDIA -->
+
+            <!-- MEDIA AND DETAILS -->
 
             <h2 class="panel-title">Media and details</h2>
 
+
             <div class="field">
-                <label for="image-url">
-                    Image URL
-                </label>
+
+                <label for="image-url">Image URL</label>
 
                 <input
                     id="image-url"
@@ -616,9 +858,12 @@ button {
                     Temporary image URL field.
                     We'll add direct image uploads.
                 </p>
+
             </div>
 
+
             <div class="field" id="video-field" hidden>
+
                 <label for="video-url">
                     Video or media link
                 </label>
@@ -628,12 +873,13 @@ button {
                     type="url"
                     placeholder="https://youtube.com/..."
                 >
+
             </div>
 
+
             <div class="field" id="tags-field">
-                <label for="publication-tags">
-                    Tags
-                </label>
+
+                <label for="publication-tags">Tags</label>
 
                 <input
                     id="publication-tags"
@@ -644,11 +890,14 @@ button {
                 <p class="field-note">
                     Separate tags with commas.
                 </p>
+
             </div>
+
 
             <div class="field-row">
 
                 <div class="field">
+
                     <label for="publication-date">
                         Publication date
                     </label>
@@ -657,63 +906,87 @@ button {
                         id="publication-date"
                         type="date"
                     >
+
                 </div>
 
                 <div class="field">
+
                     <label for="comments-enabled">
                         Comments
                     </label>
 
                     <select id="comments-enabled">
-                        <option value="true">
-                            Allowed
-                        </option>
-
-                        <option value="false">
-                            Disabled
-                        </option>
+                        <option value="true">Allowed</option>
+                        <option value="false">Disabled</option>
                     </select>
+
                 </div>
 
             </div>
+
 
             <!-- ACTIONS -->
 
             <div class="editor-actions">
 
-                <button class="action" id="save-draft" type="button" disabled>
+                <button
+                    class="action"
+                    id="save-draft"
+                    type="button"
+                    disabled
+                >
                     Save draft
                 </button>
 
-                <button class="action primary" id="publish-publication"
-                        type="button" disabled>
+                <button
+                    class="action primary"
+                    id="publish-publication"
+                    type="button"
+                    disabled
+                >
                     Publish →
                 </button>
 
             </div>
 
             <p class="action-note">
-                Drafts are private in Supabase. Publishing archives the publication on GitHub and marks it as published in Supabase. It will appear on the public journal after we connect the journal feed.
+                Drafts are private in Supabase. Publishing archives
+                the publication on GitHub and marks it as published
+                in Supabase. Published entries appear in the public
+                journal feed.
             </p>
-            <p id="draft-message" role="status" aria-live="polite"></p>
+
+            <p
+                id="draft-message"
+                role="status"
+                aria-live="polite"
+            ></p>
 
         </main>
 
-        <!-- LIVE PREVIEW -->
+
+        <!-- ===================================== -->
+        <!-- LIVE PREVIEW                         -->
+        <!-- ===================================== -->
 
         <aside class="preview-panel">
 
             <div class="preview-label">
-                LIVE PREVIEW / EXEGIS
+                LIVE PREVIEW / APORIA
             </div>
 
-            <div id="preview-gift" hidden
-                 class="preview-gift-tag song">
+            <div
+                id="preview-gift"
+                hidden
+                class="preview-gift-tag song"
+            >
                 Song of the Day
             </div>
 
-            <div class="preview-category"
-                 id="preview-category">
+            <div
+                class="preview-category"
+                id="preview-category"
+            >
                 Article
             </div>
 
@@ -721,8 +994,10 @@ button {
                 Your publication title
             </h2>
 
-            <p class="preview-summary"
-               id="preview-summary">
+            <p
+                class="preview-summary"
+                id="preview-summary"
+            >
                 Your introduction will appear here.
             </p>
 
@@ -733,131 +1008,418 @@ button {
                 hidden
             >
 
-            <div class="preview-body"
-                 id="preview-body">
+            <div class="preview-body" id="preview-body">
                 Your writing will appear here as you type.
             </div>
 
             <div class="preview-meta" id="preview-meta">
-                EXEGIS · Draft
+                APORIA · Draft
             </div>
 
         </aside>
 
     </div>
 
+
+    <!-- ===================================== -->
+    <!-- SAVED DRAFT LIBRARY                  -->
+    <!-- ===================================== -->
+
     <section id="draft-library" class="draft-library" hidden>
+
         <div class="draft-toolbar">
+
             <h2>Your saved drafts</h2>
-            <button type="button" id="new-draft" class="action">+ New draft</button>
+
+            <button
+                type="button"
+                id="new-draft"
+                class="action"
+            >
+                + New draft
+            </button>
+
         </div>
+
         <p id="draft-list-status" class="field-note"></p>
+
         <div id="draft-list"></div>
+
     </section>
 
 </div>
 
-<script>
-/* EXEGIS rich text: controlled HTML for draft storage and safe previews. */
-(function () {
-    const allowed = new Set(["P", "DIV", "BR", "H2", "H3", "STRONG", "B", "EM", "I", "BLOCKQUOTE", "UL", "OL", "LI", "A", "IMG"]);
-    function safeURL(value, image) {
-        try {
-            const url = new URL(value, window.location.href);
-            return (image ? url.protocol === "https:" : ["https:", "http:"].includes(url.protocol)) ? url.href : null;
-        } catch { return null; }
-    }
-    function cleanHTML(html) {
-        const template = document.createElement("template");
-        template.innerHTML = html;
-        const output = document.createElement("div");
-        function copyChildren(from, to) {
-            [...from.childNodes].forEach(node => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    to.appendChild(document.createTextNode(node.textContent));
-                    return;
-                }
-                if (node.nodeType !== Node.ELEMENT_NODE) return;
-                if (["SCRIPT", "STYLE", "IFRAME", "SVG", "MATH", "FORM", "OBJECT", "TEMPLATE"].includes(node.tagName)) return;
-                if (!allowed.has(node.tagName)) { copyChildren(node, to); return; }
-                const name = {DIV:"P", B:"STRONG", I:"EM"}[node.tagName] || node.tagName;
-                const next = document.createElement(name.toLowerCase());
-                if (name === "A") {
-                    const href = safeURL(node.getAttribute("href") || "", false);
-                    if (href) { next.href = href; next.rel = "noopener noreferrer"; next.target = "_blank"; }
-                    else { copyChildren(node, to); return; }
-                }
-                if (name === "IMG") {
-                    const src = safeURL(node.getAttribute("src") || "", true);
-                    if (!src) return;
-                    next.src = src;
-                    next.alt = (node.getAttribute("alt") || "").slice(0, 250);
-                } else { copyChildren(node, next); }
-                to.appendChild(next);
-            });
-        }
-        copyChildren(template.content, output);
-        return output.innerHTML;
-    }
-    const escapeText = text => { const d = document.createElement("div"); d.textContent = text; return d.innerHTML; };
-    function fromStored(value) {
-        if (!value) return "";
-        // Old EXEGIS drafts stored unformatted plain text, not HTML.
-        if (!/^\s*<(?:p|div|h2|h3|blockquote|ul|ol|br|strong|em|b|i|img|a)\b/i.test(value))
-            return value.split(/\r?\n/).map(line => `<p>${escapeText(line) || "<br>"}</p>`).join("");
-        return cleanHTML(value);
-    }
-    document.addEventListener("DOMContentLoaded", () => {
-        const editor = document.getElementById("publication-body");
-        const notify = () => editor.dispatchEvent(new Event("input", {bubbles:true}));
-        window.EXEGIS_RICH = {
-            getHTML: () => cleanHTML(editor.innerHTML).trim(),
-            setHTML: value => { editor.innerHTML = fromStored(value); notify(); }
-        };
-        document.querySelectorAll("#rich-toolbar [data-command], #rich-toolbar [data-block]").forEach(button => {
-            button.addEventListener("mousedown", event => event.preventDefault());
-            button.addEventListener("click", () => {
-                editor.focus();
-                if (button.dataset.block) document.execCommand("formatBlock", false, button.dataset.block);
-                else document.execCommand(button.dataset.command, false, null);
-                notify();
-            });
-        });
-        document.getElementById("rich-link").addEventListener("mousedown", e => e.preventDefault());
-        document.getElementById("rich-link").addEventListener("click", () => {
-            const url = prompt("Link URL (https://...)");
-            if (url === null) return;
-            const safe = safeURL(url.trim(), false);
-            if (!safe) { alert("Please enter a valid http:// or https:// link."); return; }
-            editor.focus();
-            document.execCommand("createLink", false, safe);
-            notify();
-        });
-        document.getElementById("rich-image").addEventListener("mousedown", e => e.preventDefault());
-        document.getElementById("rich-image").addEventListener("click", () => {
-            const url = prompt("HTTPS image URL:");
-            if (url === null) return;
-            const safe = safeURL(url.trim(), true);
-            if (!safe) { alert("Please enter an HTTPS image URL."); return; }
-            editor.focus();
-            document.execCommand("insertImage", false, safe);
-            notify();
-        });
-        editor.addEventListener("paste", e => {
-            e.preventDefault();
-            const value = e.clipboardData.getData("text/plain");
-            document.execCommand("insertText", false, value);
-            notify();
-        });
-    });
-})();
-</script>
+
+<!-- ========================================= -->
+<!-- RICH TEXT EDITOR                         -->
+<!-- ========================================= -->
 
 <script>
-/* =====================================
-   EXEGIS — EDITOR INTERACTIONS
-   Prototype only: no database writes
-   ===================================== */
+
+(function () {
+
+    const allowed = new Set([
+        "P", "DIV", "BR", "H2", "H3",
+        "STRONG", "B", "EM", "I",
+        "BLOCKQUOTE", "UL", "OL", "LI",
+        "A", "IMG"
+    ]);
+
+    function safeURL(value, image) {
+
+        try {
+
+            const url = new URL(
+                value,
+                window.location.href
+            );
+
+            return (
+                image
+                    ? url.protocol === "https:"
+                    : ["https:", "http:"].includes(url.protocol)
+            ) ? url.href : null;
+
+        } catch {
+            return null;
+        }
+
+    }
+
+    function cleanHTML(html) {
+
+        const template = document.createElement("template");
+        template.innerHTML = html;
+
+        const output = document.createElement("div");
+
+        function copyChildren(from, to) {
+
+            [...from.childNodes].forEach(node => {
+
+                if (node.nodeType === Node.TEXT_NODE) {
+
+                    to.appendChild(
+                        document.createTextNode(node.textContent)
+                    );
+
+                    return;
+                }
+
+                if (node.nodeType !== Node.ELEMENT_NODE) {
+                    return;
+                }
+
+                if ([
+                    "SCRIPT", "STYLE", "IFRAME",
+                    "SVG", "MATH", "FORM",
+                    "OBJECT", "TEMPLATE"
+                ].includes(node.tagName)) {
+                    return;
+                }
+
+                if (!allowed.has(node.tagName)) {
+
+                    copyChildren(node, to);
+                    return;
+
+                }
+
+                const name = {
+                    DIV: "P",
+                    B: "STRONG",
+                    I: "EM"
+                }[node.tagName] || node.tagName;
+
+                const next = document.createElement(
+                    name.toLowerCase()
+                );
+
+                if (name === "A") {
+
+                    const href = safeURL(
+                        node.getAttribute("href") || "",
+                        false
+                    );
+
+                    if (href) {
+
+                        next.href = href;
+                        next.rel = "noopener noreferrer";
+                        next.target = "_blank";
+
+                    } else {
+
+                        copyChildren(node, to);
+                        return;
+
+                    }
+
+                }
+
+                if (name === "IMG") {
+
+                    const src = safeURL(
+                        node.getAttribute("src") || "",
+                        true
+                    );
+
+                    if (!src) {
+                        return;
+                    }
+
+                    next.src = src;
+
+                    next.alt = (
+                        node.getAttribute("alt") || ""
+                    ).slice(0, 250);
+
+                } else {
+
+                    copyChildren(node, next);
+
+                }
+
+                to.appendChild(next);
+
+            });
+
+        }
+
+        copyChildren(template.content, output);
+
+        return output.innerHTML;
+
+    }
+
+    const escapeText = text => {
+
+        const d = document.createElement("div");
+        d.textContent = text;
+
+        return d.innerHTML;
+
+    };
+
+    function fromStored(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        // Preserve compatibility with old plain-text drafts.
+
+        if (!/^\s*<(?:p|div|h2|h3|blockquote|ul|ol|br|strong|em|b|i|img|a)\b/i.test(value)) {
+
+            return value
+                .split(/\r?\n/)
+                .map(line =>
+                    `<p>${escapeText(line) || "<br>"}</p>`
+                )
+                .join("");
+
+        }
+
+        return cleanHTML(value);
+
+    }
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            const editor = document.getElementById(
+                "publication-body"
+            );
+
+            const notify = () => {
+
+                editor.dispatchEvent(
+                    new Event("input", { bubbles: true })
+                );
+
+            };
+
+            // Existing internal API name preserved.
+
+            window.EXEGIS_RICH = {
+
+                getHTML: () =>
+                    cleanHTML(editor.innerHTML).trim(),
+
+                setHTML: value => {
+
+                    editor.innerHTML = fromStored(value);
+                    notify();
+
+                }
+
+            };
+
+            document.querySelectorAll(
+                "#rich-toolbar [data-command], #rich-toolbar [data-block]"
+            ).forEach(button => {
+
+                button.addEventListener(
+                    "mousedown",
+                    event => event.preventDefault()
+                );
+
+                button.addEventListener("click", () => {
+
+                    editor.focus();
+
+                    if (button.dataset.block) {
+
+                        document.execCommand(
+                            "formatBlock",
+                            false,
+                            button.dataset.block
+                        );
+
+                    } else {
+
+                        document.execCommand(
+                            button.dataset.command,
+                            false,
+                            null
+                        );
+
+                    }
+
+                    notify();
+
+                });
+
+            });
+
+
+            // INSERT HYPERLINK
+
+            document.getElementById("rich-link")
+                .addEventListener(
+                    "mousedown",
+                    event => event.preventDefault()
+                );
+
+            document.getElementById("rich-link")
+                .addEventListener("click", () => {
+
+                    const url = prompt(
+                        "Link URL (https://...)"
+                    );
+
+                    if (url === null) {
+                        return;
+                    }
+
+                    const safe = safeURL(
+                        url.trim(),
+                        false
+                    );
+
+                    if (!safe) {
+
+                        alert(
+                            "Please enter a valid http:// or https:// link."
+                        );
+
+                        return;
+
+                    }
+
+                    editor.focus();
+
+                    document.execCommand(
+                        "createLink",
+                        false,
+                        safe
+                    );
+
+                    notify();
+
+                });
+
+
+            // INSERT IMAGE
+
+            document.getElementById("rich-image")
+                .addEventListener(
+                    "mousedown",
+                    event => event.preventDefault()
+                );
+
+            document.getElementById("rich-image")
+                .addEventListener("click", () => {
+
+                    const url = prompt(
+                        "HTTPS image URL:"
+                    );
+
+                    if (url === null) {
+                        return;
+                    }
+
+                    const safe = safeURL(
+                        url.trim(),
+                        true
+                    );
+
+                    if (!safe) {
+
+                        alert(
+                            "Please enter an HTTPS image URL."
+                        );
+
+                        return;
+
+                    }
+
+                    editor.focus();
+
+                    document.execCommand(
+                        "insertImage",
+                        false,
+                        safe
+                    );
+
+                    notify();
+
+                });
+
+
+            // PASTE PLAIN TEXT SAFELY
+
+            editor.addEventListener("paste", event => {
+
+                event.preventDefault();
+
+                const value = event.clipboardData
+                    .getData("text/plain");
+
+                document.execCommand(
+                    "insertText",
+                    false,
+                    value
+                );
+
+                notify();
+
+            });
+
+        }
+    );
+
+})();
+
+</script>
+
+
+<!-- ========================================= -->
+<!-- EDITOR INTERACTIONS                      -->
+<!-- ========================================= -->
+
+<script>
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -872,18 +1434,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const date = $("publication-date");
 
     let giftKind = "song";
+
+    // Existing internal API name preserved.
+
     window.EXEGIS_EDITOR = {
+
         getGiftKind: () => giftKind,
+
         setGiftKind: kind => {
-            giftKind = ["song", "painting", "movie"].includes(kind) ? kind : "song";
-            document.querySelectorAll("[data-kind]").forEach(button => {
-                button.classList.toggle("active", button.dataset.kind === giftKind);
+
+            giftKind = [
+                "song",
+                "painting",
+                "movie"
+            ].includes(kind) ? kind : "song";
+
+            document.querySelectorAll(
+                "[data-kind]"
+            ).forEach(button => {
+
+                button.classList.toggle(
+                    "active",
+                    button.dataset.kind === giftKind
+                );
+
             });
+
             updateTemplate();
+
         },
+
         updateTemplate: () => updateTemplate(),
+
         updatePreview: () => updatePreview()
+
     };
+
 
     const labels = {
         article: "Article",
@@ -906,20 +1492,25 @@ document.addEventListener("DOMContentLoaded", () => {
         movie: "Director"
     };
 
-    // Set initial date
+
+    // INITIAL DATE
 
     const now = new Date();
+
     const localDate = new Date(
-        now.getTime() - now.getTimezoneOffset() * 60000
+        now.getTime() -
+        now.getTimezoneOffset() * 60000
     );
 
     date.value = localDate.toISOString().slice(0, 10);
 
-    // Adjust the editor to the category
+
+    // UPDATE EDITOR TEMPLATE
 
     function updateTemplate() {
 
         const selected = type.value;
+
         const isGift = selected === "to-read";
         const isArt = selected === "art";
         const isVideo = selected === "video";
@@ -944,7 +1535,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     ? "Accompanying text"
                     : "Article body";
 
-        $("publication-body").classList.toggle("short-body", isGift);
+        $("publication-body").classList.toggle(
+            "short-body",
+            isGift
+        );
 
         $("body-note").textContent = isGift
             ? "Keep it short, or write more if you wish."
@@ -959,9 +1553,11 @@ document.addEventListener("DOMContentLoaded", () => {
             : "The title of your publication";
 
         updatePreview();
+
     }
 
-    // Select a Gift of the Day category
+
+    // GIFT CATEGORY SELECTION
 
     document.querySelectorAll(
         "[data-kind]"
@@ -974,21 +1570,27 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(
                 "[data-kind]"
             ).forEach(item => {
+
                 item.classList.toggle(
                     "active",
                     item === button
                 );
+
             });
 
             updateTemplate();
+
         });
+
     });
 
-    // Preview changes instantly
+
+    // LIVE PREVIEW
 
     function updatePreview() {
 
         const selected = type.value;
+
         const isGift = selected === "to-read";
 
         $("preview-category").textContent =
@@ -1008,39 +1610,50 @@ document.addEventListener("DOMContentLoaded", () => {
             $("preview-summary").textContent =
                 summary.value.trim() ||
                 "Your introduction will appear here.";
+
         }
 
-        const formatted = window.EXEGIS_RICH.getHTML();
-        $("preview-body").innerHTML = formatted ||
+        const formatted =
+            window.EXEGIS_RICH.getHTML();
+
+        $("preview-body").innerHTML =
+            formatted ||
             "Your writing will appear here as you type.";
 
         const giftTag = $("preview-gift");
 
         giftTag.hidden = !isGift;
+
         giftTag.textContent = giftLabels[giftKind];
+
         giftTag.className =
             "preview-gift-tag " + giftKind;
 
         const image = $("preview-image");
+
         const candidate = imageURL.value.trim();
 
-        // Preview only HTTPS images
-
         if (/^https:\/\/[^ ]+$/i.test(candidate)) {
+
             image.src = candidate;
             image.hidden = false;
+
         } else {
+
             image.removeAttribute("src");
             image.hidden = true;
+
         }
 
         $("preview-meta").textContent =
-            "EXEGIS · " +
+            "APORIA · " +
             (date.value || "Undated") +
             " · Draft";
+
     }
 
-    // Hide images that cannot be loaded
+
+    // HIDE UNAVAILABLE IMAGES
 
     $("preview-image").addEventListener(
         "error",
@@ -1049,14 +1662,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
-    // Listen for form changes
+
+    // LISTEN FOR FORM CHANGES
 
     document.querySelectorAll(
         "input, textarea, select"
     ).forEach(field => {
 
-        field.addEventListener("input", updatePreview);
-        field.addEventListener("change", updatePreview);
+        field.addEventListener(
+            "input",
+            updatePreview
+        );
+
+        field.addEventListener(
+            "change",
+            updatePreview
+        );
 
     });
 
@@ -1067,334 +1688,975 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTemplate();
 
 });
+
 </script>
 
 
+<!-- ========================================= -->
+<!-- ADMINISTRATOR AUTHENTICATION             -->
+<!-- ========================================= -->
+
 <script>
-/* EXEGIS — SINGLE-FILE ADMIN AUTHENTICATION */
-document.addEventListener("DOMContentLoaded", async () => {
-    const login = document.getElementById("admin-login");
-    const intro = document.getElementById("editor-intro");
-    const editor = document.getElementById("editor-layout");
-    const logout = document.getElementById("admin-logout");
-    const status = document.getElementById("admin-status");
-    const form = document.getElementById("admin-login-form");
-    let client;
 
-    function showEditor(allowed) {
-        login.hidden = allowed;
-        intro.hidden = !allowed;
-        editor.hidden = !allowed;
-        logout.hidden = !allowed;
-        document.getElementById("draft-library").hidden = !allowed;
-        document.getElementById("save-draft").disabled = !allowed;
-        document.getElementById("publish-publication").disabled = !allowed;
-        if (!allowed) window.EXEGIS_ADMIN_CLIENT = null;
-    }
-    showEditor(false);
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    if (!window.supabase || typeof SUPABASE_URL === "undefined" ||
-        typeof SUPABASE_PUBLISHABLE_KEY === "undefined") {
-        status.textContent = "Authentication could not load. Refresh the page.";
-        return;
-    }
+        const login =
+            document.getElementById("admin-login");
 
-    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
-    });
+        const intro =
+            document.getElementById("editor-intro");
 
-    async function isAuthorized() {
-        const { data: userData, error: userError } = await client.auth.getUser();
-        if (userError || !userData?.user) return false;
-        const { data, error } = await client.rpc("is_exegis_admin");
-        if (error) throw new Error("Administrator check failed: " + error.message);
-        return data === true;
-    }
+        const editor =
+            document.getElementById("editor-layout");
 
-    async function refresh() {
-        const allowed = await isAuthorized();
-        showEditor(allowed);
-        if (allowed) {
-            window.EXEGIS_ADMIN_CLIENT = client;
-            document.dispatchEvent(new Event("exegis-admin-ready"));
-        }
-        return allowed;
-    }
+        const logout =
+            document.getElementById("admin-logout");
 
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const button = form.querySelector('button[type="submit"]');
-        button.disabled = true;
-        status.textContent = "Checking your administrator access...";
-        try {
-            const email = document.getElementById("admin-email").value.trim();
-            const password = document.getElementById("admin-password").value;
-            const { error } = await client.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-            if (!(await refresh())) {
-                await client.auth.signOut();
-                showEditor(false);
-                status.textContent = "This account is not an EXEGIS administrator.";
-                return;
+        const status =
+            document.getElementById("admin-status");
+
+        const form =
+            document.getElementById("admin-login-form");
+
+        let client;
+
+
+        function showEditor(allowed) {
+
+            login.hidden = allowed;
+            intro.hidden = !allowed;
+            editor.hidden = !allowed;
+            logout.hidden = !allowed;
+
+            document.getElementById(
+                "draft-library"
+            ).hidden = !allowed;
+
+            document.getElementById(
+                "save-draft"
+            ).disabled = !allowed;
+
+            document.getElementById(
+                "publish-publication"
+            ).disabled = !allowed;
+
+            if (!allowed) {
+                window.EXEGIS_ADMIN_CLIENT = null;
             }
-            form.reset();
-            status.textContent = "";
+
+        }
+
+
+        showEditor(false);
+
+
+        if (
+            !window.supabase ||
+            typeof SUPABASE_URL === "undefined" ||
+            typeof SUPABASE_PUBLISHABLE_KEY === "undefined"
+        ) {
+
+            status.textContent =
+                "Authentication could not load. Refresh the page.";
+
+            return;
+
+        }
+
+
+        client = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY,
+            {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: false
+                }
+            }
+        );
+
+
+        async function isAuthorized() {
+
+            const {
+                data: userData,
+                error: userError
+            } = await client.auth.getUser();
+
+            if (userError || !userData?.user) {
+                return false;
+            }
+
+            const {
+                data,
+                error
+            } = await client.rpc("is_exegis_admin");
+
+            if (error) {
+
+                throw new Error(
+                    "Administrator check failed: " +
+                    error.message
+                );
+
+            }
+
+            return data === true;
+
+        }
+
+
+        async function refresh() {
+
+            const allowed = await isAuthorized();
+
+            showEditor(allowed);
+
+            if (allowed) {
+
+                window.EXEGIS_ADMIN_CLIENT = client;
+
+                document.dispatchEvent(
+                    new Event("exegis-admin-ready")
+                );
+
+            }
+
+            return allowed;
+
+        }
+
+
+        // SIGN IN
+
+        form.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+                const button = form.querySelector(
+                    'button[type="submit"]'
+                );
+
+                button.disabled = true;
+
+                status.textContent =
+                    "Checking your administrator access...";
+
+                try {
+
+                    const email =
+                        document.getElementById(
+                            "admin-email"
+                        ).value.trim();
+
+                    const password =
+                        document.getElementById(
+                            "admin-password"
+                        ).value;
+
+                    const { error } =
+                        await client.auth.signInWithPassword({
+                            email,
+                            password
+                        });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (!(await refresh())) {
+
+                        await client.auth.signOut();
+
+                        showEditor(false);
+
+                        status.textContent =
+                            "This account is not an APORIA administrator.";
+
+                        return;
+
+                    }
+
+                    form.reset();
+
+                    status.textContent = "";
+
+                } catch (error) {
+
+                    showEditor(false);
+
+                    status.textContent =
+                        error.message ||
+                        "Unable to sign in.";
+
+                } finally {
+
+                    button.disabled = false;
+
+                }
+
+            }
+        );
+
+
+        // SIGN OUT
+
+        logout.addEventListener(
+            "click",
+            async () => {
+
+                const { error } =
+                    await client.auth.signOut();
+
+                if (error) {
+
+                    alert(
+                        "Sign out failed: " +
+                        error.message
+                    );
+
+                    return;
+
+                }
+
+                showEditor(false);
+
+                status.textContent =
+                    "You have signed out.";
+
+            }
+        );
+
+
+        // RESTORE EXISTING SESSION
+
+        try {
+
+            await refresh();
+
         } catch (error) {
+
             showEditor(false);
-            status.textContent = error.message || "Unable to sign in.";
-        } finally { button.disabled = false; }
-    });
 
-    logout.addEventListener("click", async () => {
-        const { error } = await client.auth.signOut();
-        if (error) { alert("Sign out failed: " + error.message); return; }
-        showEditor(false);
-        status.textContent = "You have signed out.";
-    });
+            status.textContent =
+                error.message ||
+                "Cannot verify administrator access.";
 
-    try { await refresh(); }
-    catch (error) {
-        showEditor(false);
-        status.textContent = error.message || "Cannot verify administrator access.";
+        }
+
     }
-});
+);
+
 </script>
 
 
+<!-- ========================================= -->
+<!-- PRIVATE DRAFTS AND PUBLISHING            -->
+<!-- ========================================= -->
+
 <script>
-/* EXEGIS — PRIVATE DRAFTS AND SERVER-VERIFIED PUBLISHING. */
+
 document.addEventListener("DOMContentLoaded", () => {
+
     const $ = id => document.getElementById(id);
+
     const save = $("save-draft");
     const publish = $("publish-publication");
     const list = $("draft-list");
     const status = $("draft-message");
+
     let currentId = null;
     let currentSlug = null;
+
     let saving = false;
     let publishing = false;
     let completedPublication = false;
 
+
     function message(text, error = false) {
+
         status.textContent = text;
-        status.className = error ? "error" : "success";
+
+        status.className =
+            error ? "error" : "success";
+
     }
+
 
     function slugify(value) {
+
         const base = String(value || "untitled")
-            .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase().replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, "").slice(0, 65);
-        return (base || "untitled") + "-" + crypto.randomUUID().slice(0, 8);
+
+            .normalize("NFKD")
+
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+
+            .toLowerCase()
+
+            .replace(
+                /[^a-z0-9]+/g,
+                "-"
+            )
+
+            .replace(
+                /^-|-$/g,
+                ""
+            )
+
+            .slice(0, 65);
+
+        return (
+            base || "untitled"
+        ) + "-" + crypto.randomUUID().slice(0, 8);
+
     }
+
+
+    // COLLECT PUBLICATION DATA
 
     function collect(userId) {
-        const type = $("publication-type").value;
-        const title = $("publication-title").value.trim();
-        const body = window.EXEGIS_RICH.getHTML();
-        const creator = $("creator").value.trim();
-        const summary = type === "to-read" ? creator : $("publication-summary").value.trim();
+
+        const type =
+            $("publication-type").value;
+
+        const title =
+            $("publication-title").value.trim();
+
+        const body =
+            window.EXEGIS_RICH.getHTML();
+
+        const creator =
+            $("creator").value.trim();
+
+        const summary = type === "to-read"
+            ? creator
+            : $("publication-summary").value.trim();
+
         return {
+
             author_id: userId,
-            slug: currentSlug || slugify(title),
+
+            slug:
+                currentSlug || slugify(title),
+
             title,
+
             type,
+
             summary,
+
             body,
-            image: $("image-url").value.trim() || null,
-            video_url: $("video-url").value.trim() || null,
-            creator: creator || null,
-            gift_kind: type === "to-read" ? window.EXEGIS_EDITOR.getGiftKind() : null,
-            tags: type === "to-read" ? [] : $("publication-tags").value.split(",").map(x => x.trim()).filter(Boolean),
-            comments_enabled: $("comments-enabled").value === "true",
-            publication_date: $("publication-date").value || new Date().toISOString().slice(0,10),
+
+            image:
+                $("image-url").value.trim() || null,
+
+            video_url:
+                $("video-url").value.trim() || null,
+
+            creator:
+                creator || null,
+
+            gift_kind: type === "to-read"
+                ? window.EXEGIS_EDITOR.getGiftKind()
+                : null,
+
+            tags: type === "to-read"
+                ? []
+                : $("publication-tags")
+                    .value
+                    .split(",")
+                    .map(x => x.trim())
+                    .filter(Boolean),
+
+            comments_enabled:
+                $("comments-enabled").value === "true",
+
+            publication_date:
+                $("publication-date").value ||
+                new Date().toISOString().slice(0, 10),
+
             status: "draft",
-            updated_at: new Date().toISOString()
+
+            updated_at:
+                new Date().toISOString()
+
         };
+
     }
+
+
+    // VERIFY ADMINISTRATOR
 
     async function getAuthorizedUser() {
-        const client = window.EXEGIS_ADMIN_CLIENT;
-        if (!client) throw new Error("Administrator session not available.");
-        const { data: { user }, error } = await client.auth.getUser();
-        if (error || !user) throw new Error("Please sign in again.");
-        const check = await client.rpc("is_exegis_admin");
-        if (check.error || check.data !== true) throw new Error("Administrator authorization failed.");
+
+        const client =
+            window.EXEGIS_ADMIN_CLIENT;
+
+        if (!client) {
+
+            throw new Error(
+                "Administrator session not available."
+            );
+
+        }
+
+        const {
+            data: { user },
+            error
+        } = await client.auth.getUser();
+
+        if (error || !user) {
+
+            throw new Error(
+                "Please sign in again."
+            );
+
+        }
+
+        const check =
+            await client.rpc("is_exegis_admin");
+
+        if (
+            check.error ||
+            check.data !== true
+        ) {
+
+            throw new Error(
+                "Administrator authorization failed."
+            );
+
+        }
+
         return { client, user };
+
     }
 
-    // Keep the original draft-save behavior, and reuse it for Publish.
-    // Only the Edge Function can perform the GitHub archive operation.
+
+    // SAVE PRIVATE DRAFT
+
     async function saveDraft() {
-        if (saving) throw new Error("A draft is already being saved.");
+
+        if (saving) {
+
+            throw new Error(
+                "A draft is already being saved."
+            );
+
+        }
+
         saving = true;
+
         save.disabled = true;
         publish.disabled = true;
+
         message("Saving draft...");
+
         try {
-            const { client, user } = await getAuthorizedUser();
+
+            const {
+                client,
+                user
+            } = await getAuthorizedUser();
+
             const payload = collect(user.id);
-            if (!payload.title) throw new Error("Please enter a title before saving.");
+
+            if (!payload.title) {
+
+                throw new Error(
+                    "Please enter a title before saving."
+                );
+
+            }
+
             const query = currentId
-                ? client.from("publications").update(payload).eq("id", currentId).eq("status", "draft")
-                : client.from("publications").insert(payload);
-            const { data, error } = await query.select("id, slug").single();
-            if (error) throw error;
+
+                ? client
+                    .from("publications")
+                    .update(payload)
+                    .eq("id", currentId)
+                    .eq("status", "draft")
+
+                : client
+                    .from("publications")
+                    .insert(payload);
+
+            const {
+                data,
+                error
+            } = await query
+                .select("id, slug")
+                .single();
+
+            if (error) {
+                throw error;
+            }
+
             currentId = data.id;
             currentSlug = data.slug;
-            message("Draft saved privately in Supabase.");
+
+            message(
+                "Draft saved privately in Supabase."
+            );
+
             await loadDrafts();
-            return { client, id: data.id };
+
+            return {
+                client,
+                id: data.id
+            };
+
         } finally {
+
             saving = false;
-            const authorized = Boolean(window.EXEGIS_ADMIN_CLIENT);
-            save.disabled = !authorized || publishing;
-            publish.disabled = !authorized || publishing;
+
+            const authorized = Boolean(
+                window.EXEGIS_ADMIN_CLIENT
+            );
+
+            save.disabled =
+                !authorized || publishing;
+
+            publish.disabled =
+                !authorized || publishing;
+
         }
+
     }
 
-    save.addEventListener("click", async () => {
-        if (saving || publishing || completedPublication) return;
-        try {
-            await saveDraft();
-        } catch (err) {
-            message(err.message || "Draft could not be saved.", true);
-        }
-    });
 
-    publish.addEventListener("click", async () => {
-        if (saving || publishing || completedPublication) return;
-        const title = $("publication-title").value.trim();
-        if (!title) {
-            message("Please enter a title before publishing.", true);
-            return;
-        }
-        if (!window.confirm(`Publish “${title}” to the EXEGIS archive?`)) return;
+    // SAVE BUTTON
 
-        publishing = true;
-        save.disabled = true;
-        publish.disabled = true;
-        publish.textContent = "Publishing...";
-        try {
-            // Save the latest rich-text and metadata before publishing.
-            const { client, id } = await saveDraft();
-            message("Draft saved. Archiving publication on GitHub...");
+    save.addEventListener(
+        "click",
+        async () => {
 
-            const { data, error } = await client.functions.invoke(
-                "publish-exegis", {
-                    body: { publication_id: id }
-                }
-            );
-            if (error) {
-                let detail = error.message || "Publishing request failed.";
-                if (error.context && typeof error.context.json === "function") {
-                    try {
-                        const payload = await error.context.json();
-                        if (payload && payload.error) detail = payload.error;
-                    } catch { /* Keep the original error. */ }
-                }
-                throw new Error(detail);
-            }
-            if (!data || data.success !== true) {
-                throw new Error((data && data.error) || "Publishing was not confirmed.");
+            if (
+                saving ||
+                publishing ||
+                completedPublication
+            ) {
+                return;
             }
 
-            message(`Published and archived on GitHub: ${data.archive_path}. The public journal feed will be connected next.`);
-            currentId = null;
-            currentSlug = null;
-            completedPublication = true;
-            await loadDrafts();
-            publish.disabled = true;
+            try {
+
+                await saveDraft();
+
+            } catch (err) {
+
+                message(
+                    err.message ||
+                    "Draft could not be saved.",
+                    true
+                );
+
+            }
+
+        }
+    );
+
+
+    // PUBLISH BUTTON
+
+    publish.addEventListener(
+        "click",
+        async () => {
+
+            if (
+                saving ||
+                publishing ||
+                completedPublication
+            ) {
+                return;
+            }
+
+            const title =
+                $("publication-title").value.trim();
+
+            if (!title) {
+
+                message(
+                    "Please enter a title before publishing.",
+                    true
+                );
+
+                return;
+
+            }
+
+            if (
+                !window.confirm(
+                    `Publish “${title}” to the APORIA archive?`
+                )
+            ) {
+                return;
+            }
+
+            publishing = true;
+
             save.disabled = true;
-            // A new draft can be started with the "+ New draft" button.
-        } catch (err) {
-            message(err.message || "Publishing failed. Your draft remains available in Supabase.", true);
-        } finally {
-            publishing = false;
-            publish.textContent = "Publish →";
-            const authorized = Boolean(window.EXEGIS_ADMIN_CLIENT);
-            save.disabled = !authorized || completedPublication;
-            publish.disabled = !authorized || completedPublication;
+            publish.disabled = true;
+
+            publish.textContent = "Publishing...";
+
+            try {
+
+                // SAVE LATEST DRAFT FIRST
+
+                const {
+                    client,
+                    id
+                } = await saveDraft();
+
+                message(
+                    "Draft saved. Archiving publication on GitHub..."
+                );
+
+                // Keep the existing Supabase Edge
+                // Function name until backend migration.
+
+                const {
+                    data,
+                    error
+                } = await client.functions.invoke(
+
+                    "publish-exegis",
+
+                    {
+                        body: {
+                            publication_id: id
+                        }
+                    }
+
+                );
+
+                if (error) {
+
+                    let detail =
+                        error.message ||
+                        "Publishing request failed.";
+
+                    if (
+                        error.context &&
+                        typeof error.context.json === "function"
+                    ) {
+
+                        try {
+
+                            const payload =
+                                await error.context.json();
+
+                            if (
+                                payload &&
+                                payload.error
+                            ) {
+                                detail = payload.error;
+                            }
+
+                        } catch {
+                            // Keep the original error.
+                        }
+
+                    }
+
+                    throw new Error(detail);
+
+                }
+
+                if (
+                    !data ||
+                    data.success !== true
+                ) {
+
+                    throw new Error(
+                        (data && data.error) ||
+                        "Publishing was not confirmed."
+                    );
+
+                }
+
+                message(
+                    `Published and archived on GitHub: ${data.archive_path}. The publication is now available in the public journal feed.`
+                );
+
+                currentId = null;
+                currentSlug = null;
+
+                completedPublication = true;
+
+                await loadDrafts();
+
+                publish.disabled = true;
+                save.disabled = true;
+
+            } catch (err) {
+
+                message(
+                    err.message ||
+                    "Publishing failed. Your draft remains available in Supabase.",
+                    true
+                );
+
+            } finally {
+
+                publishing = false;
+
+                publish.textContent = "Publish →";
+
+                const authorized = Boolean(
+                    window.EXEGIS_ADMIN_CLIENT
+                );
+
+                save.disabled =
+                    !authorized || completedPublication;
+
+                publish.disabled =
+                    !authorized || completedPublication;
+
+            }
+
         }
-    });
+    );
+
+
+    // OPEN EXISTING DRAFT
 
     function editDraft(draft) {
+
         completedPublication = false;
+
         save.disabled = false;
         publish.disabled = false;
+
         currentId = draft.id;
         currentSlug = draft.slug;
-        $("publication-type").value = draft.type;
-        $("publication-title").value = draft.title || "";
-        $("publication-summary").value = draft.summary || "";
-        window.EXEGIS_RICH.setHTML(draft.body || "");
-        $("creator").value = draft.creator || "";
-        $("image-url").value = draft.image || "";
-        $("video-url").value = draft.video_url || "";
-        $("publication-tags").value = (draft.tags || []).join(", ");
-        $("publication-date").value = draft.publication_date || "";
-        $("comments-enabled").value = String(draft.comments_enabled !== false);
-        window.EXEGIS_EDITOR.setGiftKind(draft.gift_kind || "song");
+
+        $("publication-type").value =
+            draft.type;
+
+        $("publication-title").value =
+            draft.title || "";
+
+        $("publication-summary").value =
+            draft.summary || "";
+
+        window.EXEGIS_RICH.setHTML(
+            draft.body || ""
+        );
+
+        $("creator").value =
+            draft.creator || "";
+
+        $("image-url").value =
+            draft.image || "";
+
+        $("video-url").value =
+            draft.video_url || "";
+
+        $("publication-tags").value =
+            (draft.tags || []).join(", ");
+
+        $("publication-date").value =
+            draft.publication_date || "";
+
+        $("comments-enabled").value =
+            String(draft.comments_enabled !== false);
+
+        window.EXEGIS_EDITOR.setGiftKind(
+            draft.gift_kind || "song"
+        );
+
         window.EXEGIS_EDITOR.updateTemplate();
-        message("Draft opened. Changes will be saved when you click Save draft.");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        message(
+            "Draft opened. Changes will be saved when you click Save draft."
+        );
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
     }
+
+
+    // LOAD SAVED DRAFTS
 
     async function loadDrafts() {
-        const client = window.EXEGIS_ADMIN_CLIENT;
-        if (!client) return;
-        $("draft-list-status").textContent = "Loading drafts...";
-        const { data, error } = await client.from("publications")
-            .select("id,slug,title,type,summary,body,creator,image,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at")
-            .eq("status", "draft").order("updated_at", { ascending: false });
-        if (error) {
-            $("draft-list-status").textContent = "Unable to load drafts: " + error.message;
+
+        const client =
+            window.EXEGIS_ADMIN_CLIENT;
+
+        if (!client) {
             return;
         }
+
+        $("draft-list-status").textContent =
+            "Loading drafts...";
+
+        const {
+            data,
+            error
+        } = await client
+            .from("publications")
+            .select(
+                "id,slug,title,type,summary,body,creator,image,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at"
+            )
+            .eq("status", "draft")
+            .order(
+                "updated_at",
+                { ascending: false }
+            );
+
+        if (error) {
+
+            $("draft-list-status").textContent =
+                "Unable to load drafts: " +
+                error.message;
+
+            return;
+
+        }
+
         list.replaceChildren();
-        $("draft-list-status").textContent = data.length ? `${data.length} private draft(s)` : "No saved drafts yet.";
+
+        $("draft-list-status").textContent =
+            data.length
+                ? `${data.length} private draft(s)`
+                : "No saved drafts yet.";
+
         data.forEach(draft => {
-            const item = document.createElement("div");
+
+            const item =
+                document.createElement("div");
+
             item.className = "draft-item";
-            const info = document.createElement("div");
-            const name = document.createElement("strong");
-            name.textContent = draft.title || "Untitled";
-            const meta = document.createElement("small");
-            meta.textContent = `${draft.type} · updated ${new Date(draft.updated_at).toLocaleString()}`;
-            const open = document.createElement("button");
+
+            const info =
+                document.createElement("div");
+
+            const name =
+                document.createElement("strong");
+
+            name.textContent =
+                draft.title || "Untitled";
+
+            const meta =
+                document.createElement("small");
+
+            meta.textContent =
+                `${draft.type} · updated ${new Date(draft.updated_at).toLocaleString()}`;
+
+            const open =
+                document.createElement("button");
+
             open.type = "button";
+
             open.className = "action";
+
             open.textContent = "Edit";
-            open.addEventListener("click", () => editDraft(draft));
+
+            open.addEventListener(
+                "click",
+                () => editDraft(draft)
+            );
+
             info.append(name, meta);
+
             item.append(info, open);
+
             list.append(item);
+
         });
+
     }
 
-    $("new-draft").addEventListener("click", () => {
-        completedPublication = false;
-        if (window.EXEGIS_ADMIN_CLIENT) {
-            save.disabled = false;
-            publish.disabled = false;
-        }
-        currentId = null;
-        currentSlug = null;
-        ["publication-title", "publication-summary", "creator", "image-url", "video-url", "publication-tags"]
-            .forEach(id => { $(id).value = ""; });
-        window.EXEGIS_RICH.setHTML("");
-        $("publication-type").value = "article";
-        $("comments-enabled").value = "true";
-        const now = new Date();
-        $("publication-date").value = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,10);
-        window.EXEGIS_EDITOR.setGiftKind("song");
-        window.EXEGIS_EDITOR.updateTemplate();
-        message("New draft. Nothing is saved until you click Save draft.");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    });
 
-    document.addEventListener("exegis-admin-ready", () => { void loadDrafts(); });
+    // CREATE NEW DRAFT
+
+    $("new-draft").addEventListener(
+        "click",
+        () => {
+
+            completedPublication = false;
+
+            if (window.EXEGIS_ADMIN_CLIENT) {
+
+                save.disabled = false;
+                publish.disabled = false;
+
+            }
+
+            currentId = null;
+            currentSlug = null;
+
+            [
+                "publication-title",
+                "publication-summary",
+                "creator",
+                "image-url",
+                "video-url",
+                "publication-tags"
+            ].forEach(id => {
+
+                $(id).value = "";
+
+            });
+
+            window.EXEGIS_RICH.setHTML("");
+
+            $("publication-type").value = "article";
+
+            $("comments-enabled").value = "true";
+
+            const now = new Date();
+
+            $("publication-date").value =
+                new Date(
+                    now.getTime() -
+                    now.getTimezoneOffset() * 60000
+                )
+                    .toISOString()
+                    .slice(0, 10);
+
+            window.EXEGIS_EDITOR.setGiftKind("song");
+
+            window.EXEGIS_EDITOR.updateTemplate();
+
+            message(
+                "New draft. Nothing is saved until you click Save draft."
+            );
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+
+    // ADMINISTRATOR SESSION READY
+
+    document.addEventListener(
+        "exegis-admin-ready",
+        () => {
+            void loadDrafts();
+        }
+    );
+
 });
+
 </script>
+
 </body>
+
 </html>
