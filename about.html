@@ -8,15 +8,17 @@
 
     <meta
         name="description"
-        content="About EXEGIS — contact@exegis-journal.com."
+        content="About APORIA — contact@aporia-journal.com."
     >
 
-    <title>About — EXEGIS</title>
+    <title>About — APORIA</title>
 
     <!-- STYLESHEET -->
     <link rel="stylesheet" href="css/style.css">
 
     <!-- JAVASCRIPT -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script defer src="js/supabase-config.js"></script>
     <script defer src="js/common.js"></script>
 
 </head>
@@ -26,7 +28,7 @@
     <div class="site">
 
         <!-- ===================================== -->
-        <!-- HEADER AND JOURNAL IDENTITY           -->
+        <!-- HEADER AND JOURNAL IDENTITY          -->
         <!-- ===================================== -->
 
         <header class="journal-header">
@@ -34,11 +36,8 @@
             <!-- TOP LINE -->
 
             <div class="utility">
-
                 <span>RHETORIC</span>
-
                 <span>ESSAYS, IDEAS, CULTURE</span>
-
             </div>
 
 
@@ -47,7 +46,7 @@
             <div class="masthead">
 
                 <a href="index.html" class="wordmark">
-                    EXEGIS<span class="masthead-dot">.</span>
+                    APORIA<span class="masthead-dot">.</span>
                 </a>
 
                 <div class="masthead-sub">
@@ -59,7 +58,7 @@
 
 
             <!-- ===================================== -->
-            <!-- NAVIGATION MENU                       -->
+            <!-- NAVIGATION MENU                     -->
             <!-- ===================================== -->
 
             <div class="journal-menu-bar">
@@ -69,11 +68,8 @@
                     <!-- MENU BUTTON -->
 
                     <summary class="journal-menu-button">
-
                         <span>MENU</span>
-
                         <span aria-hidden="true">☰</span>
-
                     </summary>
 
 
@@ -86,45 +82,75 @@
                     >
 
                         <div class="menu-panel-heading">
-                            EXPLORE EXEGIS
+                            EXPLORE APORIA
                         </div>
 
                         <a href="index.html" data-nav="home">
                             Front page
                         </a>
 
-                        <a href="section.html?section=articles" data-nav="articles">
+                        <a href="section.html?section=articles"
+                           data-nav="articles">
                             Articles
                         </a>
 
-                        <a href="section.html?section=analysis" data-nav="analysis">
+                        <a href="section.html?section=analysis"
+                           data-nav="analysis">
                             Analysis
                         </a>
 
-                        <a href="section.html?section=opinion" data-nav="opinion">
+                        <a href="section.html?section=opinion"
+                           data-nav="opinion">
                             Opinion
                         </a>
 
-                        <a href="section.html?section=videos" data-nav="videos">
+                        <a href="section.html?section=videos"
+                           data-nav="videos">
                             Videos
                         </a>
 
-                        <a href="section.html?section=art" data-nav="art">
+                        <a href="section.html?section=art"
+                           data-nav="art">
                             Art
                         </a>
 
-                        <a href="section.html?section=to-read" data-nav="to-read">
+                        <a href="section.html?section=to-read"
+                           data-nav="to-read">
                             Gift of the day
                         </a>
 
                         <div class="menu-panel-divider"></div>
 
-                        <a href="section.html?section=archives" data-nav="archives">
-                            Archives
+                        <a href="discussions.html"
+                           data-nav="discussions">
+                            Discussions
+                        </a>
+
+                        <div class="menu-panel-divider"></div>
+
+                        <a href="section.html?section=archives"
+                           data-nav="archives">
+                            All publications
                         </a>
 
                         <a href="about.html" data-nav="about">
                             About
+                        </a>
+
+                        <div class="menu-panel-divider"></div>
+
+                        <div class="menu-panel-heading">
+                            MEMBERS
+                        </div>
+
+                        <a href="register.html"
+                           data-nav="register">
+                            Create an account
+                        </a>
+
+                        <a href="login.html"
+                           data-nav="login">
+                            Sign in
                         </a>
 
                     </nav>
@@ -154,87 +180,84 @@
                 <!-- MAIN TITLE -->
 
                 <h1>
-                    About 
-                    <em>Exegis.</em>
+                    About
+                    <em>Aporia.</em>
                 </h1>
 
 
                 <!-- ===================================== -->
-                <!-- EDIT YOUR ABOUT TEXT BELOW            -->
+                <!-- ABOUT APORIA                          -->
                 <!-- ===================================== -->
 
-                
-<!-- ===================================== -->
-<!-- ABOUT EXEGIS                          -->
-<!-- ===================================== -->
+                <div class="about-text">
 
-<div class="about-text">
+                    <p>
+                        APORIA is a platform whose ultimate purpose is to gather
+                        thoughts and ideas, logically explained and whenever possible,
+                        demonstrated. Spinoza argued that nature unfolds through an
+                        unbroken chain of causes and implied consequences. Everything
+                        has a cause, an origin, which will also have consequences
+                        leading up to a new future. We could join that observation
+                        to a physical principle: nothing is destroyed, nothing is
+                        created, all is transformed, said a famous physicist.
+                    </p>
 
-    <p>
-        EXEGIS is a platform whose ultimate purpose is to gather
-        thoughts and ideas, logically explained and whenever possible,
-        demonstrated. Spinoza argued that nature unfolds through an
-        unbroken chain of causes and implied consequences. Everything
-        has a cause, an origin, which will also have consequences
-        leading up to a new future. We could join that observation
-        to a physical principle: nothing is destroyed, nothing is
-        created, all is transformed, said a famous physicist.
-    </p>
+                    <p>
+                        We believe thoughts, ideas, feelings are also subjected
+                        to these laws — the laws of nature, if we want to join
+                        philosophy and science together. However, causation does
+                        not seem to favor one process over another.
+                    </p>
 
-    <p>
-        We believe thoughts, ideas, feelings are also subjected
-        to these laws — the laws of nature, if we want to join
-        philosophy and science together. However, causation does
-        not seem to favor one process over another.
-    </p>
+                    <p>
+                        This page will thus serve as a platform to share thoughts
+                        and ideas, ought to be logically demonstrated, on topics
+                        concerning society as a whole — politics, social issues,
+                        economy. We can always ask whether our conclusions
+                        genuinely follow from our premises.
+                    </p>
 
-    <p>
-        This page will thus serve as a platform to share thoughts
-        and ideas, ought to be logically demonstrated, on topics
-        concerning society as a whole — politics, social issues,
-        economy. We can always ask whether our conclusions
-        genuinely follow from our premises.
-    </p>
+                    <p>
+                        The world has seen great thinkers, many of whom pointed
+                        to a form of philosophical system, a coherent framework
+                        intended to explain reality as a whole. At APORIA,
+                        at our small scale, we will focus on demonstrating
+                        one idea, one observation at a time. Perhaps the sum
+                        of many right demonstrations will lead the way toward
+                        a comprehensive system of thought, as those great
+                        thinkers intended. We can only be so sure of the
+                        rightness and coherence of our own thoughts.
+                    </p>
 
-    <p>
-        The world has seen great thinkers, many of whom pointed
-        to a form of philosophical system, a coherent framework
-        intended to explain reality as a whole. At EXEGIS,
-        at our small scale, we will focus on demonstrating
-        one idea, one observation at a time. Perhaps the sum
-        of many right demonstrations will lead the way toward
-        a comprehensive system of thought, as those great
-        thinkers intended. We can only be so sure of the
-        rightness and coherence of our own thoughts.
-    </p>
+                    <p>
+                        Logical thinking does not require abandoning morality,
+                        compassion, or human sentiment. On the contrary,
+                        every analysis begins with assumptions and values
+                        that should themselves be examined. Objectivity
+                        is not the absence of values; it is the discipline
+                        of reasoning consistently from them.
+                    </p>
 
-    <p>
-        Logical thinking does not require abandoning morality,
-        compassion, or human sentiment. On the contrary,
-        every analysis begins with assumptions and values
-        that should themselves be examined. Objectivity
-        is not the absence of values; it is the discipline
-        of reasoning consistently from them.
-    </p>
 
-    <!-- PHILOSOPHICAL QUOTATION -->
+                    <!-- PHILOSOPHICAL QUOTATION -->
 
-    <blockquote>
-        <p>
-            <em>
-                Where is it written that the enlightened attitude
-                had to renounce emotions? It is the opposite
-                that seems true to me. The enlightened mind
-                will then accomplish its task only if it does
-                it with passion.
-            </em>
-        </p>
+                    <blockquote>
 
-        <cite>— Jean Améry</cite>
-    </blockquote>
+                        <p>
+                            <em>
+                                Where is it written that the enlightened attitude
+                                had to renounce emotions? It is the opposite
+                                that seems true to me. The enlightened mind
+                                will then accomplish its task only if it does
+                                it with passion.
+                            </em>
+                        </p>
 
-</div>
+                        <cite>— Jean Améry</cite>
 
+                    </blockquote>
+
+                </div>
 
 
                 <!-- RETURN TO HOMEPAGE -->
@@ -255,11 +278,13 @@
         <footer class="site-footer">
 
             <span>
-                © <span data-year></span> EXEGIS
+                © <span data-year></span> APORIA
             </span>
 
             <span>
-                contact@exegis-journal.com.
+                <a href="mailto:contact@aporia-journal.com">
+                    contact@aporia-journal.com
+                </a>
             </span>
 
             <a href="#top">
