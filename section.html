@@ -8,30 +8,24 @@
 
     <meta
         name="description"
-        content="Explore EXEGIS — Essays, analysis, opinion, art and ideas."
+        content="Explore APORIA — Essays, analysis, opinion, art and ideas."
     >
 
-    <title>Explore — EXEGIS</title>
+    <title>Explore — APORIA</title>
 
-    <!-- =====================================
-         STYLESHEET
-         ===================================== -->
+    <!-- STYLESHEET -->
+    <link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="css/style.css?v=4">
-
-    <!-- =====================================
-         JAVASCRIPT
-         ===================================== -->
-
+    <!-- JAVASCRIPT -->
     <script
         defer
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"
     ></script>
 
     <script defer src="js/supabase-config.js"></script>
-    <script defer src="js/common.js?v=7"></script>
+    <script defer src="js/common.js"></script>
     <script defer src="js/content.js"></script>
-    <script defer src="js/site.js?v=4"></script>
+    <script defer src="js/site.js"></script>
 
 </head>
 
@@ -57,7 +51,7 @@
             <div class="masthead">
 
                 <a href="index.html" class="wordmark">
-                    EXEGIS<span class="masthead-dot">.</span>
+                    APORIA<span class="masthead-dot">.</span>
                 </a>
 
                 <div class="masthead-sub">
@@ -86,93 +80,84 @@
                         aria-label="Main navigation"
                     >
 
+                        <!--
+                            Shared navigation is populated
+                            automatically by js/common.js.
+
+                            Administration controls are added
+                            only for authorized administrators.
+                        -->
+
                         <div class="menu-panel-heading">
-                            EXPLORE EXEGIS
+                            EXPLORE APORIA
                         </div>
 
-                        <!-- HOMEPAGE -->
-
-                        <a
-                            href="index.html"
-                            data-nav="home"
-                        >
+                        <a href="index.html" data-nav="home">
                             Front page
                         </a>
 
-                        <!-- ARTICLES -->
-
-                        <a
-                            href="section.html?section=articles"
-                            data-nav="articles"
-                        >
+                        <a href="section.html?section=articles"
+                           data-nav="articles">
                             Articles
                         </a>
 
-                        <!-- ANALYSIS -->
-
-                        <a
-                            href="section.html?section=analysis"
-                            data-nav="analysis"
-                        >
+                        <a href="section.html?section=analysis"
+                           data-nav="analysis">
                             Analysis
                         </a>
 
-                        <!-- OPINION -->
-
-                        <a
-                            href="section.html?section=opinion"
-                            data-nav="opinion"
-                        >
+                        <a href="section.html?section=opinion"
+                           data-nav="opinion">
                             Opinion
                         </a>
 
-                        <!-- VIDEOS -->
-
-                        <a
-                            href="section.html?section=videos"
-                            data-nav="videos"
-                        >
+                        <a href="section.html?section=videos"
+                           data-nav="videos">
                             Videos
                         </a>
 
-                        <!-- ART -->
-
-                        <a
-                            href="section.html?section=art"
-                            data-nav="art"
-                        >
+                        <a href="section.html?section=art"
+                           data-nav="art">
                             Art
                         </a>
 
-                        <!-- GIFT OF THE DAY -->
-
-                        <a
-                            href="section.html?section=to-read"
-                            data-nav="to-read"
-                        >
+                        <a href="section.html?section=to-read"
+                           data-nav="to-read">
                             Gift of the day
                         </a>
 
-                        <!-- DIVIDER -->
+                        <div class="menu-panel-divider"></div>
+
+                        <a href="discussions.html"
+                           data-nav="discussions">
+                            Discussions
+                        </a>
 
                         <div class="menu-panel-divider"></div>
 
-                        <!-- ALL PUBLICATIONS -->
-
-                        <a
-                            href="section.html?section=archives"
-                            data-nav="archives"
-                        >
+                        <a href="section.html?section=archives"
+                           data-nav="archives">
                             All publications
                         </a>
 
-                        <!-- ABOUT -->
-
-                        <a
-                            href="about.html"
-                            data-nav="about"
-                        >
+                        <a href="about.html" data-nav="about">
                             About
+                        </a>
+
+                        <div class="menu-panel-divider"></div>
+
+                        <div class="menu-panel-heading">
+                            MEMBERS
+                        </div>
+
+                        <a href="register.html"
+                           data-nav="register">
+                            Create an account
+                        </a>
+
+                        <a href="login.html"
+                           data-nav="login">
+                            Sign in
                         </a>
 
                     </nav>
@@ -182,6 +167,7 @@
             </div>
 
         </header>
+
 
         <!-- =====================================
              MAIN CONTENT
@@ -194,52 +180,35 @@
                  ===================================== -->
 
             <section class="section-hero">
-            
-<section class="section-hero">
 
-    <!-- LARGE CATEGORY IMAGE -->
+                <!-- LARGE CATEGORY IMAGE -->
 
-    <div id="category-banner" class="category-banner" hidden>
-        <img id="category-banner-image" alt="">
-    </div>
-
-    <!-- CATEGORY BREADCRUMB -->
-
-    <p class="eyebrow">
-        EXEGIS /
-        <span id="section-crumb">BROWSE</span>
-    </p>
-
-    <!-- CATEGORY TITLE -->
-
-    <h1 id="section-title">
-        Archives
-    </h1>
-
-    <!-- CATEGORY DESCRIPTION -->
-
-    <p
-        class="intro-copy"
-        id="section-description"
-    >
-        Everything in one place.
-    </p>
-
-</section>
+                <div
+                    id="category-banner"
+                    class="category-banner"
+                    hidden
+                >
+                    <img
+                        id="category-banner-image"
+                        alt=""
+                    >
+                </div>
 
 
-                <!-- BREADCRUMB -->
+                <!-- CATEGORY BREADCRUMB -->
 
                 <p class="eyebrow">
-                    EXEGIS /
+                    APORIA /
                     <span id="section-crumb">BROWSE</span>
                 </p>
+
 
                 <!-- CATEGORY TITLE -->
 
                 <h1 id="section-title">
                     Archives
                 </h1>
+
 
                 <!-- CATEGORY DESCRIPTION -->
 
@@ -249,16 +218,21 @@
                 >
                     Everything in one place.
                 </p>
-            
+
+                <!--
+                    The category-specific publishing button
+                    is inserted here by js/common.js,
+                    but only for authorized administrators.
+                -->
+
             </section>
+
 
             <!-- =====================================
                  PUBLICATION ARCHIVE
                  ===================================== -->
 
             <section class="archive">
-
-                <!-- ARCHIVE HEADING -->
 
                 <div class="archive-top">
 
@@ -273,27 +247,24 @@
 
                 </div>
 
-                <!-- =====================================
-                     PUBLICATIONS GRID
-                     ===================================== -->
 
-                <!--
-                    Genuine published entries are
-                    inserted automatically by js/site.js.
-
-                    Empty categories display no cards.
-                    The number of entries is updated
-                    automatically.
-                -->
+                <!-- PUBLICATIONS GRID -->
 
                 <div
                     id="entries"
                     class="story-grid archive-grid"
                 ></div>
 
+                <!-- EMPTY CATEGORY MESSAGE -->
+
+                <p id="empty" class="empty" hidden>
+                    No entries in this section yet.
+                </p>
+
             </section>
 
         </main>
+
 
         <!-- =====================================
              FOOTER
@@ -302,12 +273,12 @@
         <footer class="site-footer">
 
             <span>
-                © <span data-year></span> EXEGIS
+                © <span data-year></span> APORIA
             </span>
 
             <span>
-                <a href="mailto:contact@exegis-journal.com">
-                    contact@exegis-journal.com
+                <a href="mailto:contact@aporia-journal.com">
+                    contact@aporia-journal.com
                 </a>
             </span>
 
