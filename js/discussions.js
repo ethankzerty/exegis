@@ -1,6 +1,6 @@
 
 /* ============================================================
-   EXEGIS DISCUSSIONS
+   APORIA DISCUSSIONS
    Public reading, authenticated writing, threaded replies
    ============================================================ */
 
@@ -77,7 +77,7 @@
     }
 
     function authorName(id) {
-        return authorNames.get(id) || "EXEGIS member";
+        return authorNames.get(id) || "APORIA member";
     }
 
     function shortText(text, limit = 250) {
@@ -88,7 +88,7 @@
     }
 
     function errorMessage(error) {
-        console.error("EXEGIS Discussions:", error);
+        console.error("APORIA Discussions:", error);
 
         if (error?.code === "42501") {
             return "You must confirm your email before posting.";
@@ -140,7 +140,7 @@
         const text = element(
             "p",
             "",
-            "Everyone can read EXEGIS Discussions. " +
+            "Everyone can read APORIA Discussions. " +
             "To write or reply, please sign in or create an account."
         );
 
@@ -205,7 +205,7 @@
         for (const profile of data || []) {
             authorNames.set(
                 profile.id,
-                profile.display_name || "EXEGIS member"
+                profile.display_name || "APORIA member"
             );
         }
     }
@@ -540,81 +540,80 @@
             data.body
         );
 
-        
-content.append(title, meta, body);
+        content.append(title, meta, body);
 
-// Only the discussion's author sees Delete.
-if (
-    currentUser &&
-    currentUser.id === data.author_id
-) {
-    const deleteButton = element(
-        "button",
-        "forum-reply-action",
-        "Delete discussion"
-    );
+        // Only the discussion's author sees Delete.
 
-    deleteButton.type = "button";
-    deleteButton.style.marginTop = "8px";
-    deleteButton.style.marginBottom = "24px";
-
-    deleteButton.addEventListener(
-        "click",
-        async () => {
-
-            const confirmed = window.confirm(
-                "Permanently delete this discussion?\n\n" +
-                "The discussion and ALL its replies, " +
-                "including replies written by other members, " +
-                "will be deleted.\n\n" +
-                "This cannot be undone."
+        if (
+            currentUser &&
+            currentUser.id === data.author_id
+        ) {
+            const deleteButton = element(
+                "button",
+                "forum-reply-action",
+                "Delete discussion"
             );
 
-            if (!confirmed) return;
+            deleteButton.type = "button";
+            deleteButton.style.marginTop = "8px";
+            deleteButton.style.marginBottom = "24px";
 
-            deleteButton.disabled = true;
-            deleteButton.textContent = "Deleting...";
+            deleteButton.addEventListener(
+                "click",
+                async () => {
+                    const confirmed = window.confirm(
+                        "Permanently delete this discussion?\n\n" +
+                        "The discussion and ALL its replies, " +
+                        "including replies written by other members, " +
+                        "will be deleted.\n\n" +
+                        "This cannot be undone."
+                    );
 
-            try {
-                const { data: deleted, error } =
-                    await client.rpc(
-                        "delete_own_discussion",
-                        {
-                            discussion_id: data.id
+                    if (!confirmed) return;
+
+                    deleteButton.disabled = true;
+                    deleteButton.textContent = "Deleting...";
+
+                    try {
+                        const { data: deleted, error } =
+                            await client.rpc(
+                                "delete_own_discussion",
+                                {
+                                    discussion_id: data.id
+                                }
+                            );
+
+                        if (error) throw error;
+
+                        if (deleted !== true) {
+                            throw new Error(
+                                "Unable to delete this discussion."
+                            );
                         }
-                    );
 
-                if (error) throw error;
+                        // Return to the public forum.
 
-                if (deleted !== true) {
-                    throw new Error(
-                        "Unable to delete this discussion."
-                    );
+                        returnToList();
+
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth"
+                        });
+
+                    } catch (error) {
+                        alert(errorMessage(error));
+
+                        deleteButton.disabled = false;
+                        deleteButton.textContent =
+                            "Delete discussion";
+                    }
                 }
+            );
 
-                // Return to the public forum.
-                returnToList();
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-
-            } catch (error) {
-                alert(errorMessage(error));
-
-                deleteButton.disabled = false;
-                deleteButton.textContent =
-                    "Delete discussion";
-            }
+            content.append(deleteButton);
         }
-    );
 
-    content.append(deleteButton);
-}
-
-renderReplies();
-
+        renderReplies();
 
         window.scrollTo({
             top: 0,
@@ -670,6 +669,7 @@ renderReplies();
         }
 
         const childrenByParent = new Map();
+
         const knownIds = new Set(
             currentReplies.map(reply => reply.id)
         );
@@ -697,6 +697,7 @@ renderReplies();
 
             for (const reply of children) {
                 if (rendered.has(reply.id)) continue;
+
                 rendered.add(reply.id);
 
                 const node = element(
@@ -716,17 +717,17 @@ renderReplies();
                 );
 
                 const body = element(
-    "p",
-    "forum-reply-body",
-    reply.deleted_at
-        ? "This comment has been deleted."
-        : reply.body
-);
+                    "p",
+                    "forum-reply-body",
+                    reply.deleted_at
+                        ? "This comment has been deleted."
+                        : reply.body
+                );
 
-if (reply.deleted_at) {
-    body.style.fontStyle = "italic";
-    body.style.color = "#888";
-}
+                if (reply.deleted_at) {
+                    body.style.fontStyle = "italic";
+                    body.style.color = "#888";
+                }
 
                 const action = element(
                     "button",
@@ -745,76 +746,81 @@ if (reply.deleted_at) {
 
                 node.append(meta, body);
 
-if (!reply.deleted_at) {
-    node.append(action);
+                if (!reply.deleted_at) {
+                    node.append(action);
 
-    if (
-        currentUser &&
-        currentUser.id === reply.author_id
-    ) {
-        const deleteButton = element(
-            "button",
-            "forum-reply-action",
-            "Delete"
-        );
-
-        deleteButton.type = "button";
-        deleteButton.style.marginLeft = "18px";
-
-        deleteButton.addEventListener(
-            "click",
-            async () => {
-
-                const confirmed = window.confirm(
-                    "Delete this comment? " +
-                    "This cannot be undone."
-                );
-
-                if (!confirmed) return;
-
-                deleteButton.disabled = true;
-                deleteButton.textContent = "Deleting...";
-
-                try {
-                    const { data, error } =
-                        await client.rpc(
-                            "delete_own_reply",
-                            { reply_id: reply.id }
+                    if (
+                        currentUser &&
+                        currentUser.id === reply.author_id
+                    ) {
+                        const deleteButton = element(
+                            "button",
+                            "forum-reply-action",
+                            "Delete"
                         );
 
-                    if (error) throw error;
+                        deleteButton.type = "button";
+                        deleteButton.style.marginLeft = "18px";
 
-                    if (data !== true) {
-                        throw new Error(
-                            "Unable to delete this comment."
+                        deleteButton.addEventListener(
+                            "click",
+                            async () => {
+                                const confirmed = window.confirm(
+                                    "Delete this comment? " +
+                                    "This cannot be undone."
+                                );
+
+                                if (!confirmed) return;
+
+                                deleteButton.disabled = true;
+                                deleteButton.textContent = "Deleting...";
+
+                                try {
+                                    const { data, error } =
+                                        await client.rpc(
+                                            "delete_own_reply",
+                                            { reply_id: reply.id }
+                                        );
+
+                                    if (error) throw error;
+
+                                    if (data !== true) {
+                                        throw new Error(
+                                            "Unable to delete this comment."
+                                        );
+                                    }
+
+                                    await loadReplies(currentDiscussion.id);
+                                    await loadAuthorNames(currentReplies);
+                                    renderReplies();
+
+                                } catch (error) {
+                                    alert(errorMessage(error));
+
+                                    deleteButton.disabled = false;
+                                    deleteButton.textContent = "Delete";
+                                }
+                            }
                         );
+
+                        node.append(deleteButton);
                     }
-
-                    await loadReplies(currentDiscussion.id);
-                    await loadAuthorNames(currentReplies);
-                    renderReplies();
-
-                } catch (error) {
-                    alert(errorMessage(error));
-
-                    deleteButton.disabled = false;
-                    deleteButton.textContent = "Delete";
                 }
-            }
-        );
 
-        node.append(deleteButton);
-    }
-}
                 target.append(node);
 
-                appendChildren(reply.id, node, depth + 1);
+                appendChildren(
+                    reply.id,
+                    node,
+                    depth + 1
+                );
             }
         }
 
         appendChildren(null, container, 0);
 
         // Display unusual/orphaned reply records safely.
+
         for (const reply of currentReplies) {
             if (!rendered.has(reply.id)) {
                 appendChildren(
