@@ -1,62 +1,6 @@
 
-/* =========================================
-   EXEGIS — ACCOUNT AUTHENTICATION
-   ========================================= */
-
-document.addEventListener("DOMContentLoaded", async () => {
-
     // =====================================
-    // 1. CONNECT TO SUPABASE
-    // =====================================
-
-    const message = document.getElementById(
-        "auth-message"
-    );
-
-    function showMessage(text, isError = false) {
-
-        if (!message) return;
-
-        message.textContent = text;
-
-        message.classList.toggle(
-            "error",
-            isError
-        );
-    }
-
-
-    if (
-        !window.supabase ||
-        typeof SUPABASE_URL === "undefined" ||
-        typeof SUPABASE_PUBLISHABLE_KEY === "undefined" ||
-        SUPABASE_PUBLISHABLE_KEY.includes("PASTE_")
-    ) {
-
-        showMessage(
-            "Supabase configuration is missing.",
-            true
-        );
-
-        return;
-    }
-
-
-    const client = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY,
-        {
-            auth: {
-                detectSessionInUrl: true,
-                persistSession: true,
-                autoRefreshToken: true
-            }
-        }
-    );
-
-
-    // =====================================
-    // 2. REGISTRATION
+    // 2. MEMBERSHIP REGISTRATION
     // =====================================
 
     const registerForm = document.getElementById(
@@ -65,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     registerForm?.addEventListener(
         "submit",
-        async (event) => {
+        async event => {
 
             event.preventDefault();
 
@@ -73,46 +17,58 @@ document.addEventListener("DOMContentLoaded", async () => {
                 'button[type="submit"]'
             );
 
+            const firstName = document
+                .getElementById("first-name")
+                .value.trim();
+
+            const lastName = document
+                .getElementById("last-name")
+                .value.trim();
+
             const displayName = document
                 .getElementById("display-name")
-                .value
-                .trim();
+                .value.trim();
 
             const email = document
                 .getElementById("email")
-                .value
-                .trim();
+                .value.trim();
 
             const password = document
                 .getElementById("password")
                 .value;
 
+            // =====================================
+            // VALIDATION
+            // =====================================
+
             if (
+                !firstName ||
+                !lastName ||
                 displayName.length < 2 ||
                 displayName.length > 60
             ) {
-
                 showMessage(
-                    "Your display name must contain 2–60 characters.",
+                    "Please provide your name and a " +
+                    "display name of 2–60 characters.",
                     true
                 );
-
                 return;
             }
 
             if (password.length < 8) {
-
                 showMessage(
-                    "Your password must contain at least 8 characters.",
+                    "Your password must contain " +
+                    "at least 8 characters.",
                     true
                 );
-
                 return;
             }
 
             button.disabled = true;
 
-            showMessage("Creating your account...");
+            showMessage(
+                "Submitting your membership request..."
+            );
 
             try {
 
@@ -121,217 +77,72 @@ document.addEventListener("DOMContentLoaded", async () => {
                     window.location.href
                 ).href;
 
-                const { error } = await client.auth.signUp({
+                // Create the account in Supabase.
+                //
+                // The existing database trigger
+                // creates a profile automatically.
+                //
+                // profiles.approved defaults to false.
 
-                    email: email,
+                const { data, error } =
+                    await client.auth.signUp({
 
-                    password: password,
+                        email,
+                        password,
 
-                    options: {
+                        options: {
 
-                        emailRedirectTo: redirectURL,
+                            emailRedirectTo: redirectURL,
 
-                        data: {
-                            display_name: displayName
+                            data: {
+                                first_name: firstName,
+                                last_name: lastName,
+                                display_name: displayName
+                            }
+
                         }
 
+                    });
+
+                if (error) {
+                    throw error;
+                }
+
+                // If signup returned a session,
+                // do not leave the applicant signed in.
+
+                if (data.session) {
+                    const { error: signOutError } =
+                        await client.auth.signOut();
+
+                    if (signOutError) {
+                        throw signOutError;
                     }
-
-                });
-
-                if (error) throw error;
+                }
 
                 registerForm.reset();
 
                 showMessage(
-                    "Registration submitted. Check your email " +
-                    "for a confirmation link. If an account " +
-                    "already exists, use the sign-in page."
+                    "Your request has been received. " +
+                    "Membership is subject to approval. " +
+                    "If email verification is required, " +
+                    "please complete it using the email sent to you."
                 );
 
-            }
-
-            catch (error) {
+            } catch (error) {
 
                 showMessage(
                     error.message ||
-                    "Registration failed.",
+                    "We could not submit your request. " +
+                    "Please try again.",
                     true
                 );
 
-            }
+            } finally {
 
-            finally {
                 button.disabled = false;
-            }
-
-        }
-    );
-
-
-    // =====================================
-    // 3. LOGIN
-    // =====================================
-
-    const loginForm = document.getElementById(
-        "login-form"
-    );
-
-    const accountPanel = document.getElementById(
-        "account-panel"
-    );
-
-    const accountName = document.getElementById(
-        "account-name"
-    );
-
-
-    async function updateAccountView() {
-
-        if (!loginForm) return;
-
-        const { data, error } =
-            await client.auth.getUser();
-
-        const user = error ? null : data.user;
-
-        const confirmed = Boolean(
-            user && user.email_confirmed_at
-        );
-
-        if (confirmed) {
-
-            loginForm.hidden = true;
-
-            accountPanel.hidden = false;
-
-            const { data: profile } = await client
-                .from("profiles")
-                .select("display_name")
-                .eq("id", user.id)
-                .single();
-
-            accountName.textContent =
-                profile?.display_name ||
-                user.user_metadata?.display_name ||
-                "EXEGIS member";
-
-        } else {
-
-            loginForm.hidden = false;
-
-            accountPanel.hidden = true;
-
-        }
-    }
-
-
-    loginForm?.addEventListener(
-        "submit",
-        async (event) => {
-
-            event.preventDefault();
-
-            const button = loginForm.querySelector(
-                'button[type="submit"]'
-            );
-
-            const email = document
-                .getElementById("email")
-                .value
-                .trim();
-
-            const password = document
-                .getElementById("password")
-                .value;
-
-            button.disabled = true;
-
-            showMessage("Signing in...");
-
-            try {
-
-                const { error } =
-                    await client.auth.signInWithPassword({
-                        email,
-                        password
-                    });
-
-                if (error) throw error;
-
-                await updateAccountView();
-
-                showMessage(
-                    "You are now signed in."
-                );
 
             }
 
-            catch (error) {
-
-                showMessage(
-                    error.message ||
-                    "Unable to sign in.",
-                    true
-                );
-
-            }
-
-            finally {
-                button.disabled = false;
-            }
-
         }
     );
-
-
-    // =====================================
-    // 4. LOGOUT
-    // =====================================
-
-    const logoutButton = document.getElementById(
-        "logout-button"
-    );
-
-    logoutButton?.addEventListener(
-        "click",
-        async () => {
-
-            const { error } =
-                await client.auth.signOut();
-
-            if (error) {
-
-                showMessage(error.message, true);
-                return;
-
-            }
-
-            await updateAccountView();
-
-            showMessage("You have signed out.");
-
-        }
-    );
-
-
-    // =====================================
-    // 5. RESTORE EXISTING SESSION
-    // =====================================
-
-    if (loginForm) {
-
-        try {
-            await updateAccountView();
-        }
-
-        catch (error) {
-            showMessage(
-                "Unable to restore your session.",
-                true
-            );
-        }
-
-    }
-
-});
