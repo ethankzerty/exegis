@@ -1,11 +1,11 @@
 
 /* =========================================
-   EXEGIS
+   APORIA
    SUPABASE CONFIGURATION
    ========================================= */
 
 /*
-   This file connects EXEGIS to its
+   This file connects APORIA to its
    Supabase authentication and database
    services.
 
@@ -40,6 +40,6 @@ if (
     !SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_")
 ) {
     console.error(
-        "EXEGIS: Supabase configuration is invalid."
+        "APORIA: Supabase configuration is invalid."
     );
 }
