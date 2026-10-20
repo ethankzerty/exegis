@@ -1,26 +1,31 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Request Membership — EXEGIS</title>
+    <title>Create an Account — EXEGIS</title>
 
     <meta name="description"
-          content="Request membership to participate in EXEGIS discussions.">
+          content="Create an EXEGIS account to join discussions and exchange ideas.">
 
+    <!-- STYLESHEETS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
 
-    <!-- Supabase library -->
+    <!-- SUPABASE LIBRARY -->
     <script defer
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
     </script>
 
-    <!-- Existing EXEGIS authentication configuration -->
+    <!-- SUPABASE CONFIGURATION -->
     <script defer src="js/supabase-config.js"></script>
-    <script defer src="js/auth.js?v=14"></script>
+
+    <!-- AUTHENTICATION -->
+    <script defer src="js/auth.js?v=15"></script>
+
 </head>
 
 <body id="top">
@@ -28,6 +33,7 @@
 <div class="site">
 
     <!-- HEADER -->
+
     <header class="journal-header">
 
         <div class="utility">
@@ -36,6 +42,7 @@
         </div>
 
         <div class="masthead">
+
             <a href="index.html" class="wordmark">
                 EXEGIS<span class="masthead-dot">.</span>
             </a>
@@ -44,6 +51,7 @@
                 A journal of thoughts, observations
                 &amp; rhetoric study on the world
             </div>
+
         </div>
 
         <div class="auth-nav">
@@ -54,28 +62,32 @@
     </header>
 
     <!-- REGISTRATION -->
+
     <main class="auth-main">
 
         <section class="auth-panel">
 
             <p class="eyebrow">EXEGIS DISCUSSIONS</p>
 
-            <h1>Request membership</h1>
+            <h1>Create an account</h1>
 
             <p class="auth-description">
-                Join the conversation. Share your thoughts,
+                Join EXEGIS Discussions to share your thoughts,
                 question ideas, and exchange perspectives.
             </p>
 
             <p class="auth-description">
-                Membership requests are reviewed individually.
-                Please provide your details below.
-                We aim to respond within 24 hours.
+                Create your account below. You will receive
+                a confirmation email to verify your address
+                before signing in.
             </p>
+
+            <!-- REGISTRATION FORM -->
 
             <form id="register-form">
 
                 <!-- FIRST NAME -->
+
                 <label for="first-name">
                     First name
                 </label>
@@ -90,6 +102,7 @@
                 >
 
                 <!-- LAST NAME -->
+
                 <label for="last-name">
                     Last name
                 </label>
@@ -104,6 +117,7 @@
                 >
 
                 <!-- DISPLAY NAME -->
+
                 <label for="display-name">
                     Display name
                 </label>
@@ -120,11 +134,12 @@
                 >
 
                 <p class="field-note">
-                    Your display name will be visible
-                    to other members.
+                    This is the name other readers will see
+                    beside your discussions and replies.
                 </p>
 
                 <!-- EMAIL -->
+
                 <label for="email">
                     Email address
                 </label>
@@ -134,12 +149,13 @@
                     id="email"
                     name="email"
                     autocomplete="email"
-                    placeholder="you@example.com"
                     maxlength="254"
+                    placeholder="you@example.com"
                     required
                 >
 
                 <!-- PASSWORD -->
+
                 <label for="password">
                     Password
                 </label>
@@ -154,11 +170,12 @@
                 >
 
                 <p class="field-note">
-                    Choose a unique password of at least
-                    8 characters.
+                    Choose a unique password containing
+                    at least 8 characters.
                 </p>
 
-                <!-- AGREEMENT -->
+                <!-- COMMUNITY AGREEMENT -->
+
                 <label class="auth-consent">
 
                     <input
@@ -175,17 +192,19 @@
 
                 </label>
 
-                <!-- SUBMIT BUTTON -->
+                <!-- SUBMIT -->
+
                 <button
                     type="submit"
                     class="auth-submit"
                 >
-                    Submit membership request
+                    Create my account
                 </button>
 
             </form>
 
-            <!-- REGISTRATION RESULT -->
+            <!-- CONFIRMATION OR ERROR MESSAGE -->
+
             <p
                 id="auth-message"
                 class="auth-message"
@@ -193,8 +212,10 @@
                 aria-live="polite"
             ></p>
 
+            <!-- SIGN IN -->
+
             <div class="auth-bottom">
-                Already a member?
+                Already have an account?
                 <a href="login.html">Sign in →</a>
             </div>
 
@@ -203,13 +224,16 @@
     </main>
 
     <!-- FOOTER -->
+
     <footer class="site-footer">
 
         <span>© EXEGIS</span>
 
         <span>Discussions · Ideas · Culture</span>
 
-        <a href="#top">Back to top ↑</a>
+        <a href="#top">
+            Back to top ↑
+        </a>
 
     </footer>
 
