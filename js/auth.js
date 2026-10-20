@@ -1,23 +1,23 @@
 
 /* ============================================================
    EXEGIS — AUTHENTICATION
-   Supabase Authentication + Manual Membership Approval
-
-   Handles:
-   1. Registration
-   2. Email verification
-   3. Manual membership approval
-   4. Login
-   5. Account display
-   6. Logout
+   Automatic Supabase registration and email confirmation
    ============================================================ */
 
 (async function () {
     "use strict";
 
-    /* ========================================================
-       1. SUPABASE CONNECTION
-       ======================================================== */
+    // SUPABASE CONNECTION
+
+    const url =
+        typeof SUPABASE_URL !== "undefined"
+            ? SUPABASE_URL
+            : window.SUPABASE_URL;
+
+    const key =
+        typeof SUPABASE_PUBLISHABLE_KEY !== "undefined"
+            ? SUPABASE_PUBLISHABLE_KEY
+            : window.SUPABASE_PUBLISHABLE_KEY;
 
     const messageElement =
         document.getElementById("auth-message");
@@ -32,44 +32,26 @@
 
     function setVisible(element, visible) {
         if (!element) return;
+
         element.hidden = !visible;
         element.style.display = visible ? "" : "none";
     }
 
-    function setButtonLoading(form, loading) {
+    function setLoading(form, loading) {
         const button = form?.querySelector(
             'button[type="submit"]'
         );
 
-        if (button) {
-            button.disabled = loading;
-        }
+        if (button) button.disabled = loading;
     }
 
-    // These constants come from the existing
-    // js/supabase-config.js file.
-
-    const url =
-        typeof SUPABASE_URL !== "undefined"
-            ? SUPABASE_URL
-            : window.SUPABASE_URL;
-
-    const key =
-        typeof SUPABASE_PUBLISHABLE_KEY !== "undefined"
-            ? SUPABASE_PUBLISHABLE_KEY
-            : window.SUPABASE_PUBLISHABLE_KEY;
-
     if (!window.supabase || !url || !key) {
-        console.error(
-            "EXEGIS: Supabase configuration is missing."
-        );
+        console.error("Supabase configuration missing");
 
         showMessage(
-            "The membership service is temporarily unavailable. " +
-            "Please try again later.",
+            "Authentication is temporarily unavailable.",
             true
         );
-
         return;
     }
 
@@ -85,122 +67,56 @@
         }
     );
 
-    /* ========================================================
-       2. MEMBERSHIP STATUS
-       ======================================================== */
-
-    async function getMembershipStatus(user) {
-
-        if (!user) {
-            return {
-                approved: false,
-                verified: false,
-                displayName: ""
-            };
-        }
-
-        const verified = Boolean(
-            user.email_confirmed_at
-        );
-
-        const { data: profile, error } = await client
-            .from("profiles")
-            .select("display_name, approved")
-            .eq("id", user.id)
-            .single();
-
-        if (error) {
-            console.error(
-                "EXEGIS: Could not read membership profile.",
-                error
-            );
-
-            throw new Error(
-                "Unable to verify your membership status."
-            );
-        }
-
-        return {
-            approved: profile.approved === true,
-            verified,
-            displayName: profile.display_name || "Member"
-        };
-    }
-
-    /* ========================================================
-       3. REGISTRATION
-       ======================================================== */
+    // REGISTRATION
 
     const registerForm =
         document.getElementById("register-form");
 
     registerForm?.addEventListener(
         "submit",
-        async function (event) {
-
+        async event => {
             event.preventDefault();
 
             const firstName = document
-                .getElementById("first-name")
-                .value.trim();
+                .getElementById("first-name").value.trim();
 
             const lastName = document
-                .getElementById("last-name")
-                .value.trim();
+                .getElementById("last-name").value.trim();
 
             const displayName = document
-                .getElementById("display-name")
-                .value.trim();
+                .getElementById("display-name").value.trim();
 
             const email = document
-                .getElementById("email")
-                .value.trim();
+                .getElementById("email").value.trim();
 
             const password = document
-                .getElementById("password")
-                .value;
+                .getElementById("password").value;
 
-            if (
-                !firstName ||
-                !lastName ||
+            if (!firstName || !lastName ||
                 displayName.length < 2 ||
-                displayName.length > 60
-            ) {
+                displayName.length > 60 ||
+                password.length < 8) {
+
                 showMessage(
-                    "Please complete your name and choose " +
-                    "a display name between 2 and 60 characters.",
+                    "Please complete all fields correctly.",
                     true
                 );
                 return;
             }
 
-            if (password.length < 8) {
-                showMessage(
-                    "Your password must contain at least 8 characters.",
-                    true
-                );
-                return;
-            }
-
-            setButtonLoading(registerForm, true);
-
-            showMessage(
-                "Submitting your membership request..."
-            );
+            setLoading(registerForm, true);
+            showMessage("Creating your account...");
 
             try {
-
-                const redirectURL = new URL(
-                    "login.html",
-                    window.location.href
-                ).href;
-
                 const { data, error } =
                     await client.auth.signUp({
                         email,
                         password,
                         options: {
-                            emailRedirectTo: redirectURL,
+                            emailRedirectTo: new URL(
+                                "login.html",
+                                location.href
+                            ).href,
                             data: {
                                 first_name: firstName,
                                 last_name: lastName,
@@ -209,169 +125,112 @@
                         }
                     });
 
-                if (error) {
-                    throw error;
-                }
-
-                // New applicants must not remain
-                // authenticated after registration.
+                if (error) throw error;
 
                 if (data.session) {
-
                     const { error: signOutError } =
                         await client.auth.signOut();
 
-                    if (signOutError) {
-                        throw signOutError;
-                    }
+                    if (signOutError) throw signOutError;
                 }
 
                 registerForm.reset();
 
                 showMessage(
-                    "Your membership request has been submitted. " +
-                    "All applications are reviewed individually. " +
-                    "If you receive an email verification message, " +
-                    "please follow its instructions."
+                    "Your account request has been submitted. " +
+                    "Check your inbox for a confirmation email " +
+                    "from Supabase. Once confirmed, you can sign in."
                 );
 
             } catch (error) {
-
-                console.error(
-                    "EXEGIS registration error:",
-                    error
-                );
-
+                console.error(error);
                 showMessage(
-                    error.message ||
-                    "Registration failed. Please try again.",
+                    error.message || "Registration failed.",
                     true
                 );
-
             } finally {
-
-                setButtonLoading(registerForm, false);
-
+                setLoading(registerForm, false);
             }
         }
     );
 
-    /* ========================================================
-       4. LOGIN
-       ======================================================== */
+    // LOGIN
 
     const loginForm =
         document.getElementById("login-form");
 
     loginForm?.addEventListener(
         "submit",
-        async function (event) {
-
+        async event => {
             event.preventDefault();
 
-            const emailInput = document.getElementById(
-                "email"
-            );
+            const email = document
+                .getElementById("email").value.trim();
 
-            const passwordInput = document.getElementById(
-                "password"
-            );
+            const password = document
+                .getElementById("password").value;
 
-            const email = emailInput?.value.trim();
-            const password = passwordInput?.value;
-
-            if (!email || !password) {
-                showMessage(
-                    "Please enter your email and password.",
-                    true
-                );
-                return;
-            }
-
-            setButtonLoading(loginForm, true);
-
+            setLoading(loginForm, true);
             showMessage("Signing in...");
 
             try {
-
                 const { data, error } =
                     await client.auth.signInWithPassword({
                         email,
                         password
                     });
 
-                if (error) {
-                    throw error;
-                }
+                if (error) throw error;
 
-                const user = data.user;
-
-                const status =
-                    await getMembershipStatus(user);
-
-                if (!status.verified) {
-
+                if (!data.user?.email_confirmed_at) {
                     await client.auth.signOut();
 
                     showMessage(
-                        "Please verify your email address " +
-                        "before signing in.",
+                        "Please confirm your email address first.",
                         true
                     );
-
                     return;
                 }
 
-                if (!status.approved) {
-
-                    await client.auth.signOut();
-
-                    showMessage(
-                        "Your membership request is still " +
-                        "awaiting approval. Please wait for " +
-                        "your welcome message from EXEGIS.",
-                        true
-                    );
-
-                    return;
-                }
-
-                showMessage("Welcome back.");
-
+                showMessage("Welcome back!");
                 await updateAccountView();
 
             } catch (error) {
-
-                console.error(
-                    "EXEGIS login error:",
-                    error
-                );
-
                 showMessage(
-                    error.message ||
-                    "Unable to sign in. Please try again.",
+                    error.message || "Unable to sign in.",
                     true
                 );
-
             } finally {
-
-                setButtonLoading(loginForm, false);
-
+                setLoading(loginForm, false);
             }
         }
     );
 
-    /* ========================================================
-       5. ACCOUNT DISPLAY
-       ======================================================== */
+    // ACCOUNT VIEW
 
     async function updateAccountView() {
-
         const loginPanel =
             document.getElementById("login-panel");
 
         const accountPanel =
             document.getElementById("account-panel");
+
+        if (!loginPanel && !accountPanel) return;
+
+        const { data: { user } } =
+            await client.auth.getUser();
+
+        if (!user || !user.email_confirmed_at) {
+            setVisible(loginPanel, true);
+            setVisible(accountPanel, false);
+            return;
+        }
+
+        const { data: profile } = await client
+            .from("profiles")
+            .select("display_name")
+            .eq("id", user.id)
+            .maybeSingle();
 
         const accountName =
             document.getElementById("account-name") ||
@@ -380,70 +239,20 @@
         const accountEmail =
             document.getElementById("account-email");
 
-        // Only run account-panel logic when
-        // those elements exist on the page.
-
-        if (!loginPanel && !accountPanel) {
-            return;
+        if (accountName) {
+            accountName.textContent =
+                profile?.display_name || "Member";
         }
 
-        const { data, error } =
-            await client.auth.getUser();
-
-        if (error || !data.user) {
-
-            setVisible(loginPanel, true);
-            setVisible(accountPanel, false);
-
-            return;
+        if (accountEmail) {
+            accountEmail.textContent = user.email || "";
         }
 
-        const user = data.user;
-
-        try {
-
-            const status =
-                await getMembershipStatus(user);
-
-            if (
-                !status.verified ||
-                !status.approved
-            ) {
-
-                setVisible(loginPanel, true);
-                setVisible(accountPanel, false);
-
-                return;
-            }
-
-            if (accountName) {
-                accountName.textContent =
-                    status.displayName;
-            }
-
-            if (accountEmail) {
-                accountEmail.textContent = user.email;
-            }
-
-            setVisible(loginPanel, false);
-            setVisible(accountPanel, true);
-
-        } catch (error) {
-
-            console.error(
-                "EXEGIS account display error:",
-                error
-            );
-
-            setVisible(loginPanel, true);
-            setVisible(accountPanel, false);
-
-        }
+        setVisible(loginPanel, false);
+        setVisible(accountPanel, true);
     }
 
-    /* ========================================================
-       6. LOGOUT
-       ======================================================== */
+    // LOGOUT
 
     const logoutButton =
         document.getElementById("logout-button") ||
@@ -451,35 +260,22 @@
 
     logoutButton?.addEventListener(
         "click",
-        async function (event) {
-
+        async event => {
             event.preventDefault();
 
-            const { error } =
-                await client.auth.signOut();
+            const { error } = await client.auth.signOut();
 
             if (error) {
-                showMessage(
-                    "Unable to sign out. Please try again.",
-                    true
-                );
+                showMessage("Unable to sign out.", true);
                 return;
             }
 
-            window.location.href = "login.html";
-
+            location.href = "login.html";
         }
     );
 
-    /* ========================================================
-       7. INITIAL ACCOUNT CHECK
-       ======================================================== */
+    // INITIALIZE
 
-    if (
-        document.getElementById("account-panel") ||
-        document.getElementById("login-panel")
-    ) {
-        await updateAccountView();
-    }
+    await updateAccountView();
 
 })();
