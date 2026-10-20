@@ -1,6 +1,6 @@
 
 /* =========================================
-   EXEGIS — HOMEPAGE AND CATEGORY PAGES
+   APORIA — HOMEPAGE AND CATEGORY PAGES
    ========================================= */
 
 (() => {
@@ -403,7 +403,7 @@
         }
 
         bannerImage.src = imageURL;
-        bannerImage.alt = `${heading} — EXEGIS`;
+        bannerImage.alt = `${heading} — APORIA`;
 
         banner.hidden = false;
     }
@@ -572,7 +572,7 @@
             const [heading, description] =
                 sections[current];
 
-            document.title = `${heading} — EXEGIS`;
+            document.title = `${heading} — APORIA`;
 
             // Category heading
 
@@ -724,7 +724,7 @@
         .then(display)
         .catch(error => {
             console.warn(
-                "EXEGIS: live publications unavailable.",
+                "APORIA: live publications unavailable.",
                 error
             );
         });
