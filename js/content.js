@@ -1,6 +1,6 @@
 
 /*
- * EXEGIS — Publication Archive
+ * APORIA — Publication Archive
  *
  * Add one object per genuine publication.
  *
