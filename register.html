@@ -7,30 +7,25 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1">
 
-    <title>Register — EXEGIS</title>
+    <title>Request Membership — EXEGIS</title>
 
     <meta name="description"
-          content="Create an account to join EXEGIS Discussions.">
+          content="Request membership to participate in EXEGIS Discussions.">
 
-    <link rel="stylesheet" href="css/style.css">
+    <!-- STYLESHEETS -->
+
+    <link rel="stylesheet" href="css/style.css?v=10">
     <link rel="stylesheet" href="css/auth.css">
-
-    <!-- Supabase browser library -->
-    <script defer
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-    </script>
-
-    <!-- Configuration and authentication -->
-    <script defer src="js/supabase-config.js"></script>
-    <script defer src="js/auth.js"></script>
 
 </head>
 
-<body>
+<body id="top">
 
     <div class="site">
 
-        <!-- HEADER -->
+        <!-- =====================================
+             HEADER
+             ===================================== -->
 
         <header class="journal-header">
 
@@ -60,41 +55,64 @@
         </header>
 
 
-        <!-- REGISTRATION FORM -->
+        <!-- =====================================
+             MEMBERSHIP APPLICATION
+             ===================================== -->
 
         <main class="auth-main">
 
             <section class="auth-panel">
 
-                <p class="eyebrow">EXEGIS DISCUSSIONS</p>
+                <p class="eyebrow">
+                    EXEGIS DISCUSSIONS
+                </p>
 
-                <h1>Create an account</h1>
+                <h1>Request membership</h1>
 
                 <p class="auth-description">
                     Join the conversation. Share your thoughts,
                     question ideas, and exchange perspectives.
                 </p>
 
-                <form id="register-form">
+                <p class="auth-description">
+                    Membership requests are reviewed individually.
+                    Please provide your details below.
+                    We aim to respond within 24 hours.
+                </p>
 
-                    <label for="display-name">
-                        Display name
+
+                <!-- MEMBERSHIP REQUEST FORM -->
+
+                <form id="membership-form">
+
+                    <label for="first-name">
+                        First name
                     </label>
 
                     <input
                         type="text"
-                        id="display-name"
-                        name="display-name"
-                        placeholder="Your public name"
-                        minlength="2"
-                        maxlength="60"
+                        id="first-name"
+                        name="first-name"
+                        autocomplete="given-name"
+                        placeholder="Your first name"
+                        maxlength="80"
                         required
                     >
 
-                    <p class="field-note">
-                        This name will appear publicly beside
-                        your discussions and replies.
-                    </p>
+
+                    <label for="last-name">
+                        Last name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="last-name"
+                        name="last-name"
+                        autocomplete="family-name"
+                        placeholder="Your last name"
+                        maxlength="80"
+                        required
+                    >
 
 
                     <label for="email">
@@ -107,60 +125,48 @@
                         name="email"
                         autocomplete="email"
                         placeholder="you@example.com"
+                        maxlength="254"
                         required
                     >
 
-
-                    <label for="password">
-                        Password
-                    </label>
-
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        autocomplete="new-password"
-                        minlength="8"
-                        required
-                    >
 
                     <p class="field-note">
-                        Use a unique password with at least
-                        8 characters.
+                        If your request is approved, you will
+                        receive instructions to activate your
+                        account and choose your own password.
                     </p>
 
 
-                    <label class="auth-consent">
-                        <input
-                            type="checkbox"
-                            id="rules-agreement"
-                            required
-                        >
-
-                        <span>
-                            I agree to participate respectfully.
-                            My chosen display name and messages
-                            will be publicly visible.
-                        </span>
-                    </label>
-
-
-                    <button type="submit"
-                            class="auth-submit">
-                        Create account
+                    <button
+                        type="submit"
+                        class="auth-submit"
+                    >
+                        Submit membership request
                     </button>
 
                 </form>
 
-                <p id="auth-message"
-                   class="auth-message"
-                   role="status"
-                   aria-live="polite">
-                </p>
+
+                <!-- STATUS MESSAGE -->
+
+                <p
+                    id="auth-message"
+                    class="auth-message"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+
+
+                <!-- ACCOUNT NAVIGATION -->
 
                 <div class="auth-bottom">
-                    Already registered?
-                    <a href="login.html">Sign in →</a>
+
+                    Already a member?
+
+                    <a href="login.html">
+                        Sign in →
+                    </a>
+
                 </div>
 
             </section>
@@ -168,23 +174,106 @@
         </main>
 
 
-        <!-- FOOTER -->
+        <!-- =====================================
+             FOOTER
+             ===================================== -->
 
         <footer class="site-footer">
 
-            <span>© EXEGIS</span>
+            <span>
+                © EXEGIS
+            </span>
 
             <span>
                 Discussions · Ideas · Culture
             </span>
 
-            <a href="index.html">
-                Return home ↑
+            <a href="#top">
+                Back to top ↑
             </a>
 
         </footer>
 
     </div>
+
+
+    <!-- =====================================
+         MEMBERSHIP SUBMISSION
+         ===================================== -->
+
+    <script>
+        (() => {
+            "use strict";
+
+            const form = document.getElementById(
+                "membership-form"
+            );
+
+            const message = document.getElementById(
+                "auth-message"
+            );
+
+            form.addEventListener("submit", event => {
+                event.preventDefault();
+
+                const firstName = document.getElementById(
+                    "first-name"
+                ).value.trim();
+
+                const lastName = document.getElementById(
+                    "last-name"
+                ).value.trim();
+
+                const email = document.getElementById(
+                    "email"
+                ).value.trim();
+
+                if (!firstName || !lastName || !email) {
+                    message.textContent =
+                        "Please complete all fields.";
+
+                    message.classList.add("error");
+                    return;
+                }
+
+                // Temporary direct-email submission.
+                // The visitor must send the email manually.
+                // A secure form endpoint will replace this
+                // in the next implementation step.
+
+                const subject =
+                    "EXEGIS — Membership Request";
+
+                const body = [
+                    "Hello,",
+                    "",
+                    "I would like to request membership to EXEGIS.",
+                    "",
+                    "First name: " + firstName,
+                    "Last name: " + lastName,
+                    "Email: " + email,
+                    "",
+                    "Thank you."
+                ].join("\n");
+
+                const mailto =
+                    "mailto:contact@exegis-journal.com" +
+                    "?subject=" +
+                    encodeURIComponent(subject) +
+                    "&body=" +
+                    encodeURIComponent(body);
+
+                message.classList.remove("error");
+
+                message.textContent =
+                    "Your email application is ready. " +
+                    "Please send it using your email app " +
+                    "to complete your request.";
+
+                window.location.href = mailto;
+            });
+        })();
+    </script>
 
 </body>
 </html>
