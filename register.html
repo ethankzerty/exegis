@@ -6,25 +6,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Create an Account — EXEGIS</title>
+    <title>Create an Account — APORIA</title>
 
-    <meta name="description"
-          content="Create an EXEGIS account to join discussions and exchange ideas.">
+    <meta
+        name="description"
+        content="Create an APORIA account to join discussions and exchange ideas."
+    >
 
     <!-- STYLESHEETS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
 
     <!-- SUPABASE LIBRARY -->
-    <script defer
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-    </script>
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"
+    ></script>
 
     <!-- SUPABASE CONFIGURATION -->
     <script defer src="js/supabase-config.js"></script>
 
     <!-- AUTHENTICATION -->
-    <script defer src="js/auth.js?v=15"></script>
+    <script defer src="js/auth.js"></script>
 
 </head>
 
@@ -32,7 +35,9 @@
 
 <div class="site">
 
-    <!-- HEADER -->
+    <!-- ===================================== -->
+    <!-- HEADER                               -->
+    <!-- ===================================== -->
 
     <header class="journal-header">
 
@@ -44,7 +49,7 @@
         <div class="masthead">
 
             <a href="index.html" class="wordmark">
-                EXEGIS<span class="masthead-dot">.</span>
+                APORIA<span class="masthead-dot">.</span>
             </a>
 
             <div class="masthead-sub">
@@ -61,18 +66,21 @@
 
     </header>
 
-    <!-- REGISTRATION -->
+
+    <!-- ===================================== -->
+    <!-- REGISTRATION                         -->
+    <!-- ===================================== -->
 
     <main class="auth-main">
 
         <section class="auth-panel">
 
-            <p class="eyebrow">EXEGIS DISCUSSIONS</p>
+            <p class="eyebrow">APORIA DISCUSSIONS</p>
 
             <h1>Create an account</h1>
 
             <p class="auth-description">
-                Join EXEGIS Discussions to share your thoughts,
+                Join APORIA Discussions to share your thoughts,
                 question ideas, and exchange perspectives.
             </p>
 
@@ -82,7 +90,10 @@
                 before signing in.
             </p>
 
-            <!-- REGISTRATION FORM -->
+
+            <!-- ===================================== -->
+            <!-- REGISTRATION FORM                    -->
+            <!-- ===================================== -->
 
             <form id="register-form">
 
@@ -101,6 +112,7 @@
                     required
                 >
 
+
                 <!-- LAST NAME -->
 
                 <label for="last-name">
@@ -115,6 +127,7 @@
                     maxlength="80"
                     required
                 >
+
 
                 <!-- DISPLAY NAME -->
 
@@ -138,6 +151,7 @@
                     beside your discussions and replies.
                 </p>
 
+
                 <!-- EMAIL -->
 
                 <label for="email">
@@ -153,6 +167,7 @@
                     placeholder="you@example.com"
                     required
                 >
+
 
                 <!-- PASSWORD -->
 
@@ -174,6 +189,7 @@
                     at least 8 characters.
                 </p>
 
+
                 <!-- COMMUNITY AGREEMENT -->
 
                 <label class="auth-consent">
@@ -192,6 +208,7 @@
 
                 </label>
 
+
                 <!-- SUBMIT -->
 
                 <button
@@ -203,6 +220,7 @@
 
             </form>
 
+
             <!-- CONFIRMATION OR ERROR MESSAGE -->
 
             <p
@@ -211,6 +229,7 @@
                 role="status"
                 aria-live="polite"
             ></p>
+
 
             <!-- SIGN IN -->
 
@@ -223,13 +242,22 @@
 
     </main>
 
-    <!-- FOOTER -->
+
+    <!-- ===================================== -->
+    <!-- FOOTER                               -->
+    <!-- ===================================== -->
 
     <footer class="site-footer">
 
-        <span>© EXEGIS</span>
+        <span>
+            © APORIA
+        </span>
 
-        <span>Discussions · Ideas · Culture</span>
+        <span>
+            <a href="mailto:contact@aporia-journal.com">
+                contact@aporia-journal.com
+            </a>
+        </span>
 
         <a href="#top">
             Back to top ↑
@@ -240,4 +268,5 @@
 </div>
 
 </body>
+
 </html>
