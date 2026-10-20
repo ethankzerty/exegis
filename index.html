@@ -4,32 +4,27 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
 
     <meta
         name="description"
-        content="EXEGIS — Analysis, Videos, Essays, Art and ideas."
+        content="APORIA — A journal of analysis, essays, opinion, art, videos and ideas."
     >
 
-    <title>EXEGIS — A Journal of Ideas</title>
+    <title>APORIA — A Journal of Ideas</title>
 
-    <!-- ===================================== -->
-    <!-- STYLESHEET                            -->
-    <!-- ===================================== -->
+    <!-- STYLESHEET -->
+    <link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="css/style.css?v=3">
-
-
-    <!-- ===================================== -->
-    <!-- JAVASCRIPT                            -->
-    <!-- ===================================== -->
-
-    <script defer src="js/common.js?v=3"></script>
+    <!-- JAVASCRIPT -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script defer src="js/supabase-config.js"></script>
+    <script defer src="js/common.js"></script>
     <script defer src="js/content.js"></script>
     <script defer src="js/site.js"></script>
 
 </head>
-
 
 <body id="top">
 
@@ -41,59 +36,38 @@
 
         <header class="journal-header">
 
-            <!-- TOP LINE -->
-
             <div class="utility">
-
                 <span>RHETORIC</span>
-
                 <span>ESSAYS, IDEAS, CULTURE</span>
-
             </div>
 
-
-            <!-- ===================================== -->
-            <!-- JOURNAL TITLE                        -->
-            <!-- ===================================== -->
+            <!-- JOURNAL IDENTITY -->
 
             <div class="masthead">
 
                 <a href="index.html" class="wordmark">
-                    EXEGIS<span class="masthead-dot">.</span>
+                    APORIA<span class="masthead-dot">.</span>
                 </a>
 
                 <div class="masthead-sub">
-
                     A journal of thoughts, observations
                     &amp; rhetoric study on the world
-
                 </div>
 
             </div>
 
-
             <!-- ===================================== -->
-            <!-- COMPACT DROPDOWN NAVIGATION           -->
+            <!-- NAVIGATION MENU                     -->
             <!-- ===================================== -->
 
             <div class="journal-menu-bar">
 
                 <details class="journal-main-menu">
 
-                    <!-- MENU BUTTON -->
-
                     <summary class="journal-menu-button">
-
                         <span>MENU</span>
-
                         <span aria-hidden="true">☰</span>
-
                     </summary>
-
-
-                    <!-- ===================================== -->
-                    <!-- MAIN NAVIGATION LINKS                -->
-                    <!-- ===================================== -->
 
                     <nav
                         id="main-nav"
@@ -101,116 +75,69 @@
                         aria-label="Main navigation"
                     >
 
+                        <!--
+                            Public navigation is populated
+                            by js/common.js.
+
+                            Administrator links are added
+                            only after Supabase authorization.
+                        -->
+
                         <div class="menu-panel-heading">
-                            EXPLORE EXEGIS
+                            EXPLORE APORIA
                         </div>
-
-
-                        <!-- HOMEPAGE -->
 
                         <a href="index.html" data-nav="home">
                             Front page
                         </a>
 
-
-                        <!-- ARTICLES -->
-
-                        <a
-                            href="section.html?section=articles"
-                            data-nav="articles"
-                        >
+                        <a href="section.html?section=articles"
+                           data-nav="articles">
                             Articles
                         </a>
 
-
-                        <!-- ANALYSIS -->
-
-                        <a
-                            href="section.html?section=analysis"
-                            data-nav="analysis"
-                        >
+                        <a href="section.html?section=analysis"
+                           data-nav="analysis">
                             Analysis
                         </a>
 
-
-                        <!-- OPINION -->
-
-                        <a
-                            href="section.html?section=opinion"
-                            data-nav="opinion"
-                        >
+                        <a href="section.html?section=opinion"
+                           data-nav="opinion">
                             Opinion
                         </a>
 
-
-                        <!-- VIDEOS -->
-
-                        <a
-                            href="section.html?section=videos"
-                            data-nav="videos"
-                        >
+                        <a href="section.html?section=videos"
+                           data-nav="videos">
                             Videos
                         </a>
 
-
-                        <!-- ART -->
-
-                        <a
-                            href="section.html?section=art"
-                            data-nav="art"
-                        >
+                        <a href="section.html?section=art"
+                           data-nav="art">
                             Art
                         </a>
 
-
-                        <!-- GIFT OF THE DAY -->
-
-                        <a
-                            href="section.html?section=to-read"
-                            data-nav="to-read"
-                        >
+                        <a href="section.html?section=to-read"
+                           data-nav="to-read">
                             Gift of the day
                         </a>
 
-
-                        <!-- ===================================== -->
-                        <!-- DISCUSSIONS                         -->
-                        <!-- ===================================== -->
-
                         <div class="menu-panel-divider"></div>
 
-                        <a
-                            href="discussions.html"
-                            data-nav="discussions"
-                        >
+                        <a href="discussions.html"
+                           data-nav="discussions">
                             Discussions
                         </a>
 
-
-                        <!-- ===================================== -->
-                        <!-- ARCHIVES AND ABOUT                  -->
-                        <!-- ===================================== -->
-
                         <div class="menu-panel-divider"></div>
 
-                        <a
-                            href="section.html?section=archives"
-                            data-nav="archives"
-                        >
+                        <a href="section.html?section=archives"
+                           data-nav="archives">
                             All publications
                         </a>
 
-                        <a
-                            href="about.html"
-                            data-nav="about"
-                        >
+                        <a href="about.html" data-nav="about">
                             About
                         </a>
-
-
-                        <!-- ===================================== -->
-                        <!-- MEMBER ACCOUNTS                      -->
-                        <!-- ===================================== -->
 
                         <div class="menu-panel-divider"></div>
 
@@ -218,23 +145,13 @@
                             MEMBERS
                         </div>
 
-
-                        <!-- REGISTRATION -->
-
-                        <a
-                            href="register.html"
-                            data-nav="register"
-                        >
+                        <a href="register.html"
+                           data-nav="register">
                             Create an account
                         </a>
 
-
-                        <!-- LOGIN -->
-
-                        <a
-                            href="login.html"
-                            data-nav="login"
-                        >
+                        <a href="login.html"
+                           data-nav="login">
                             Sign in
                         </a>
 
@@ -253,26 +170,17 @@
 
         <main class="front-page">
 
-
-            <!-- ===================================== -->
-            <!-- MOST RECENT PUBLICATION              -->
-            <!-- ===================================== -->
+            <!-- MOST RECENT PUBLICATION -->
 
             <section class="latest-feature">
 
                 <div class="section-bar">
-
-                    <h2>
-                        MOST RECENTLY
-                    </h2>
-
+                    <h2>MOST RECENTLY</h2>
                 </div>
 
-
                 <!--
-                    The latest publication is
-                    automatically displayed here
-                    by js/site.js.
+                    The latest published entry is
+                    automatically displayed by js/site.js.
                 -->
 
                 <div id="lead-story"></div>
@@ -280,17 +188,13 @@
             </section>
 
 
-            <!-- ===================================== -->
-            <!-- JOURNAL PUBLICATIONS GRID            -->
-            <!-- ===================================== -->
+            <!-- JOURNAL PUBLICATIONS GRID -->
 
             <section class="latest-section">
 
                 <div class="section-bar">
 
-                    <h2>
-                        FROM THE JOURNAL
-                    </h2>
+                    <h2>FROM THE JOURNAL</h2>
 
                     <a href="section.html?section=archives">
                         All publications ↗
@@ -298,11 +202,9 @@
 
                 </div>
 
-
                 <!--
-                    Publication vignettes are generated
-                    automatically from js/content.js
-                    using js/site.js.
+                    Published entries are rendered
+                    automatically by js/site.js.
                 -->
 
                 <div
@@ -310,23 +212,14 @@
                     class="story-grid"
                 ></div>
 
-
-                <!-- EMPTY PUBLICATIONS MESSAGE -->
-
-                <p
-                    id="empty"
-                    class="empty"
-                    hidden
-                >
+                <p id="empty" class="empty" hidden>
                     No publications yet.
                 </p>
 
             </section>
 
 
-            <!-- ===================================== -->
-            <!-- PUBLICATION COUNT                    -->
-            <!-- ===================================== -->
+            <!-- PUBLICATION COUNT -->
 
             <span id="visible-count" hidden></span>
 
@@ -340,11 +233,13 @@
         <footer class="site-footer">
 
             <span>
-                © <span data-year></span> EXEGIS
+                © <span data-year></span> APORIA
             </span>
 
             <span>
-                contact@exegis-journal.com
+                <a href="mailto:contact@aporia-journal.com">
+                    contact@aporia-journal.com
+                </a>
             </span>
 
             <a href="#top">
