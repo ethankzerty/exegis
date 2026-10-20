@@ -1,6 +1,6 @@
 
 /* ============================================================
-   EXEGIS — AUTHENTICATION
+   APORIA — AUTHENTICATION
    Automatic Supabase registration and email confirmation
    ============================================================ */
 
@@ -67,7 +67,9 @@
         }
     );
 
+    // =========================================
     // REGISTRATION
+    // =========================================
 
     const registerForm =
         document.getElementById("register-form");
@@ -137,9 +139,9 @@
                 registerForm.reset();
 
                 showMessage(
-                    "Your account request has been submitted. " +
-                    "Check your inbox for a confirmation email " +
-                    "from Supabase. Once confirmed, you can sign in."
+                    "Your APORIA account request has been submitted. " +
+                    "Check your inbox for a confirmation email. " +
+                    "Once your address is confirmed, you can sign in."
                 );
 
             } catch (error) {
@@ -154,7 +156,9 @@
         }
     );
 
+    // =========================================
     // LOGIN
+    // =========================================
 
     const loginForm =
         document.getElementById("login-form");
@@ -206,7 +210,9 @@
         }
     );
 
+    // =========================================
     // ACCOUNT VIEW
+    // =========================================
 
     async function updateAccountView() {
         const loginPanel =
@@ -252,7 +258,9 @@
         setVisible(accountPanel, true);
     }
 
+    // =========================================
     // LOGOUT
+    // =========================================
 
     const logoutButton =
         document.getElementById("logout-button") ||
@@ -274,7 +282,9 @@
         }
     );
 
+    // =========================================
     // INITIALIZE
+    // =========================================
 
     await updateAccountView();
 
