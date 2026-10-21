@@ -614,9 +614,69 @@
                 : all;
 
             if (target) {
-                target.innerHTML =
-                    visible.map(card).join("");
+
+    if (current === "to-read") {
+
+        const giftCategories = [
+            ["Cinema", "cinema", "movie"],
+            ["Music", "music", "song"],
+            ["Reading", "reading"],
+            ["Art", "art", "painting"]
+        ];
+
+        target.className = "gift-collections";
+
+        target.innerHTML = giftCategories.map(
+            ([heading, ...kinds]) => {
+
+                const publications = visible.filter(entry =>
+                    kinds.includes(
+                        String(entry.giftKind || "").toLowerCase()
+                    )
+                );
+
+                return `
+                    <section style="margin-bottom: 65px;">
+
+                        <h2 style="
+                            font-family: Georgia, serif;
+                            font-size: 29px;
+                            font-weight: normal;
+                            margin: 0 0 25px;
+                            padding-bottom: 14px;
+                            border-bottom: 1px solid #dcd9d2;
+                        ">
+                            ${heading}
+                        </h2>
+
+                        ${
+                            publications.length
+                                ? `
+                                    <div class="story-grid archive-grid">
+                                        ${publications.map(card).join("")}
+                                    </div>
+                                `
+                                : `
+                                    <p class="empty">
+                                        No publications yet.
+                                    </p>
+                                `
+                        }
+
+                    </section>
+                `;
+
             }
+        ).join("");
+
+    } else {
+
+        target.className = "story-grid archive-grid";
+
+        target.innerHTML = visible.map(card).join("");
+
+    }
+}
 
             // Publication count
 
