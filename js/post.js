@@ -239,6 +239,7 @@
             body: row.body || "",
             image: row.image || "",
             imageAlt: row.image_alt || "",
+            imageCaption: row.image_caption || "",
             videoUrl: row.video_url || "",
             creator: row.creator || "",
             giftKind: row.gift_kind || ""
@@ -358,7 +359,14 @@
                 >
             `
             : "";
-
+              const imageCaption =
+            imageURL && entry.imageCaption
+                ? `
+                    <p class="post-image-caption">
+                        ${esc(entry.imageCaption)}
+                    </p>
+                `
+                : "";
         const video = videoEmbed(
             entry.videoUrl,
             entry.title
@@ -376,6 +384,7 @@
             </p>
 
             ${image}
+            ${imageCaption}
 
             ${video}
 
@@ -419,6 +428,7 @@
                 "body",
                 "image",
                 "image_alt",
+                "image_caption",
                 "video_url",
                 "creator",
                 "gift_kind",
