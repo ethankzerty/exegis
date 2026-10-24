@@ -341,3 +341,10 @@
         margin-bottom: 24px;
     }
 }
+/* DESKTOP — CENTER THE FEATURED IMAGE */
+
+@media (min-width: 801px) {
+    .lead-art img {
+        object-position: center center;
+    }
+}
