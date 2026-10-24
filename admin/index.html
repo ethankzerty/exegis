@@ -845,6 +845,18 @@
             </div>
 
 
+            <div class="field">
+                <label for="image-caption">Image caption</label>
+                <input
+                    id="image-caption"
+                    type="text"
+                    placeholder="Artist, title, date, or photo credit"
+                >
+                <p class="field-note">
+                    Optional. Appears beneath the main image in the published article.
+                </p>
+            </div>
+
             <div class="field" id="video-field" hidden>
 
                 <label for="video-url">
@@ -2059,6 +2071,9 @@ document.addEventListener("DOMContentLoaded", () => {
             image:
                 $("image-url").value.trim() || null,
 
+            image_caption:
+                $("image-caption").value.trim() || null,
+
             video_url:
                 $("video-url").value.trim() || null,
 
@@ -2563,6 +2578,9 @@ document.addEventListener("DOMContentLoaded", () => {
         $("image-url").value =
             draft.image || "";
 
+        $("image-caption").value =
+            draft.image_caption || "";
+
         $("video-url").value =
             draft.video_url || "";
 
@@ -2614,7 +2632,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } = await client
             .from("publications")
             .select(
-                "id,slug,title,type,summary,body,creator,image,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at"
+                "id,slug,title,type,summary,body,creator,image,image_caption,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at"
             )
             .eq("status", "draft")
             .order(
@@ -2695,7 +2713,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $("published-list-status").textContent = "Loading publications...";
         const { data, error } = await client
             .from("publications")
-            .select("id,slug,title,type,summary,body,creator,image,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at")
+            .select("id,slug,title,type,summary,body,creator,image,image_caption,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at")
             .eq("status", "published")
             .order("publication_date", { ascending: false })
             .limit(1000);
@@ -2758,6 +2776,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "publication-summary",
                 "creator",
                 "image-url",
+                "image-caption",
                 "video-url",
                 "publication-tags"
             ].forEach(id => {
