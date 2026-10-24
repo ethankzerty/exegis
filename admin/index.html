@@ -1030,6 +1030,15 @@
 
     </section>
 
+    <!-- PUBLISHED PUBLICATIONS -->
+    <section id="published-library" class="draft-library" hidden>
+        <div class="draft-toolbar">
+            <h2>Published publications</h2>
+        </div>
+        <p id="published-list-status" class="field-note"></p>
+        <div id="published-list"></div>
+    </section>
+
 </div>
 
 
@@ -1720,6 +1729,10 @@ document.addEventListener(
             ).hidden = !allowed;
 
             document.getElementById(
+                "published-library"
+            ).hidden = !allowed;
+
+            document.getElementById(
                 "save-draft"
             ).disabled = !allowed;
 
@@ -1953,10 +1966,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const save = $("save-draft");
     const publish = $("publish-publication");
     const list = $("draft-list");
+    const publishedList = $("published-list");
     const status = $("draft-message");
 
     let currentId = null;
     let currentSlug = null;
+    let editingPublished = false;
+    let originalPublishedType = null;
 
     let saving = false;
     let publishing = false;
@@ -2151,6 +2167,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 user
             } = await getAuthorizedUser();
 
+            if (editingPublished) {
+                throw new Error("Use Update publication for published articles.");
+            }
+
             const payload = collect(user.id);
 
             if (!payload.title) {
@@ -2277,6 +2297,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
 
+            if (editingPublished) {
+                await updatePublished();
+                return;
+            }
+
             if (
                 !window.confirm(
                     `Publish “${title}” to the APORIA archive?`
@@ -2378,6 +2403,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 completedPublication = true;
 
                 await loadDrafts();
+                await loadPublished();
 
                 publish.disabled = true;
                 save.disabled = true;
@@ -2412,13 +2438,107 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
+    // UPDATE EXISTING PUBLISHED ARTICLE IN PLACE
+
+    async function updatePublished() {
+        if (saving || publishing || !editingPublished || !currentId) return;
+
+        const title = $("publication-title").value.trim();
+        if (!title) {
+            message("Please enter a title before updating.", true);
+            return;
+        }
+
+        if (!window.confirm(`Update the existing publication “${title}”? Its URL will not change.`)) {
+            return;
+        }
+
+        publishing = true;
+        save.disabled = true;
+        publish.disabled = true;
+        publish.textContent = "Updating...";
+
+        try {
+            const { client, user } = await getAuthorizedUser();
+            const payload = collect(user.id);
+
+            // Published identity and original dates must not change.
+            delete payload.author_id;
+            delete payload.slug;
+            delete payload.publication_date;
+            delete payload.status;
+            delete payload.type;
+            if ($("publication-type").value !== originalPublishedType) {
+                throw new Error("The publication category cannot be changed during an update.");
+            }
+
+            const { data: changed, error: updateError } = await client
+                .from("publications")
+                .update(payload)
+                .eq("id", currentId)
+                .eq("status", "published")
+                .select("id")
+                .single();
+
+            if (updateError || !changed) {
+                throw new Error(updateError?.message || "Could not update the published article.");
+            }
+
+            message("Changes saved in Supabase. Synchronizing the GitHub archive...");
+
+            const { data, error } = await client.functions.invoke(
+                "publish-exegis",
+                { body: { publication_id: currentId } }
+            );
+
+            if (error) {
+                let detail = error.message || "Archive synchronization failed.";
+                if (error.context && typeof error.context.json === "function") {
+                    try {
+                        const result = await error.context.json();
+                        if (result?.error) detail = result.error;
+                    } catch { /* keep original error */ }
+                }
+                throw new Error(detail);
+            }
+            if (!data?.success) {
+                throw new Error(data?.error || "GitHub archive synchronization was not confirmed.");
+            }
+
+            message("Publication updated successfully. Its original link and comments are preserved.");
+            await loadPublished();
+            completedPublication = true;
+            save.disabled = true;
+            publish.disabled = true;
+        } catch (error) {
+            message(
+                (error.message || "Update failed.") +
+                " If Supabase saved changes but GitHub failed, you can retry Update publication.",
+                true
+            );
+        } finally {
+            publishing = false;
+            publish.textContent = "Update publication →";
+            publish.disabled = completedPublication || !Boolean(window.EXEGIS_ADMIN_CLIENT);
+            save.disabled = true;
+        }
+    }
+
+
     // OPEN EXISTING DRAFT
 
-    function editDraft(draft) {
+    function editDraft(draft, isPublished = false) {
+
+        editingPublished = isPublished;
+        originalPublishedType = isPublished ? draft.type : null;
+        $("publication-type").disabled = isPublished;
+        $("publication-date").disabled = isPublished;
+        save.disabled = isPublished;
+        publish.textContent = isPublished ? "Update publication →" : "Publish →";
 
         completedPublication = false;
 
-        save.disabled = false;
+        save.disabled = isPublished;
         publish.disabled = false;
 
         currentId = draft.id;
@@ -2461,8 +2581,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         window.EXEGIS_EDITOR.updateTemplate();
 
-        message(
-            "Draft opened. Changes will be saved when you click Save draft."
+        message(isPublished
+            ? "Published article opened. Click Update publication to save your changes."
+            : "Draft opened. Changes will be saved when you click Save draft."
         );
 
         window.scrollTo({
@@ -2565,6 +2686,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    // LOAD PUBLISHED PUBLICATIONS FOR EDITING
+
+    async function loadPublished() {
+        const client = window.EXEGIS_ADMIN_CLIENT;
+        if (!client) return;
+
+        $("published-list-status").textContent = "Loading publications...";
+        const { data, error } = await client
+            .from("publications")
+            .select("id,slug,title,type,summary,body,creator,image,video_url,tags,gift_kind,comments_enabled,publication_date,updated_at")
+            .eq("status", "published")
+            .order("publication_date", { ascending: false })
+            .limit(1000);
+
+        if (error) {
+            $("published-list-status").textContent = "Unable to load publications: " + error.message;
+            return;
+        }
+
+        publishedList.replaceChildren();
+        $("published-list-status").textContent = data.length
+            ? `${data.length} published publication(s)`
+            : "No published publications yet.";
+
+        data.forEach(publication => {
+            const item = document.createElement("div");
+            item.className = "draft-item";
+            const info = document.createElement("div");
+            const name = document.createElement("strong");
+            name.textContent = publication.title || "Untitled";
+            const meta = document.createElement("small");
+            meta.textContent = `${publication.type} · ${publication.publication_date || "Undated"}`;
+            info.append(name, meta);
+            const open = document.createElement("button");
+            open.type = "button";
+            open.className = "action";
+            open.textContent = "Edit";
+            open.addEventListener("click", () => editDraft(publication, true));
+            item.append(info, open);
+            publishedList.append(item);
+        });
+    }
+
+
     // CREATE NEW DRAFT
 
     $("new-draft").addEventListener(
@@ -2572,6 +2737,11 @@ document.addEventListener("DOMContentLoaded", () => {
         () => {
 
             completedPublication = false;
+            editingPublished = false;
+            originalPublishedType = null;
+            $("publication-type").disabled = false;
+            $("publication-date").disabled = false;
+            publish.textContent = "Publish →";
 
             if (window.EXEGIS_ADMIN_CLIENT) {
 
@@ -2635,6 +2805,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "exegis-admin-ready",
         () => {
             void loadDrafts();
+            void loadPublished();
         }
     );
 
