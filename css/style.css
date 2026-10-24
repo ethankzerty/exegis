@@ -348,3 +348,14 @@
         object-position: center center;
     }
 }
+/* APORIA — ARTICLE IMAGE CAPTIONS */
+
+.post-image-caption {
+    margin: -12px 0 30px;
+    text-align: center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11px;
+    line-height: 1.6;
+    font-style: italic;
+    color: #77736c;
+}
